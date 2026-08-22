@@ -1,7 +1,7 @@
 # 🌸 VTuber Real-Time OBS AI Subtitle & Live Translator (Community Edition)
 
 <p align="center">
-  <img src="src-ui/app-icon.png" width="130" height="130" alt="VTuber Subtitle Studio Icon" />
+  <img src="src-ui/app-icon.png" width="120" height="120" alt="VTuber Subtitle Studio Icon" />
 </p>
 
 <p align="center">
@@ -15,6 +15,12 @@
   <img src="https://img.shields.io/badge/React-19-cyan.svg" alt="React 19" />
   <img src="https://img.shields.io/badge/OBS-Browser_Source_100%25-purple.svg" alt="OBS" />
   <a href="https://github.com/Lumichandesu"><img src="https://img.shields.io/badge/Made%20With%20%E2%99%A5%20By-Lumichandesu-pink.svg" alt="Lumichandesu" /></a>
+</p>
+
+---
+
+<p align="center">
+  <img src="Home.png" alt="VTuber Subtitle Studio Workspace Screenshot" style="max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
 </p>
 
 ---
