@@ -1,0 +1,26 @@
+# Node & Bun Dependencies
+node_modules/
+bun.lockb
+package-lock.json
+.*.bun-build
+
+# Build Outputs & Binaries
+dist/
+dist-pro/
+dist-free/
+*.exe
+*.zip
+*.ico
+*.obj
+*.pdb
+*.log
+
+# Runtime data & secrets
+.env
+.env.local
+active_port.txt
+*.pid
+
+# OS generated files
+.DS_Store
+Thumbs.db

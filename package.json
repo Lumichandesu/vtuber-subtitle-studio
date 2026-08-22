@@ -1,0 +1,39 @@
+{
+  "name": "vtuber-subtitle-app",
+  "version": "1.0.0",
+  "description": "Real-time OBS AI Subtitle & Live Translator for VTubers (TH / JP / EN)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src-server/server.ts",
+    "dev:server": "bun run --watch src-server/server.ts",
+    "dev:ui": "vite",
+    "build": "bun run scripts/build-exe.ts",
+    "build:ui": "vite build",
+    "build:server": "bun build --compile --minify --target=bun-windows-x64 ./src-server/server.ts --outfile ./dist/vtuber-subtitle-server.exe",
+    "start": "bun run src-server/server.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/static": "^1.2.0",
+    "@sinclair/typebox": "^0.34.14",
+    "clsx": "^2.1.1",
+    "elysia": "^1.2.10",
+    "lucide-react": "^0.475.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
+  }
+}

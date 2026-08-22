@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VTuber Live Subtitle Overlay (OBS Browser Source)</title>
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link id="dynamic-font-loader" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=M+PLUS+Rounded+1c:wght@700;800;900&family=Noto+Sans+JP:wght@700;900&family=Outfit:wght@700;800&family=Prompt:wght@600;700;800&family=Sarabun:wght@600;700&family=Zen+Maru+Gothic:wght@700;900&family=Kanit:wght@600;800&family=Mitr:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: transparent !important;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 24px 32px 40px 32px;
+      font-family: 'Prompt', 'M PLUS Rounded 1c', 'Outfit', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #overlay-container {
+      width: 100%;
+      max-width: 1380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: translateY(15px) scale(0.99);
+      will-change: transform, opacity;
+    }
+
+    #overlay-container.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    #subtitle-card {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px 36px;
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 255, 255, 0.1);
+      transition: all 0.2s ease;
+      max-width: 95%;
+      text-align: center;
+    }
+
+    .romaji-text {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: -2px;
+      display: none;
+    }
+
+    .source-text {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .translations-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .translation-line {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: 0.3px;
+      word-break: break-word;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .lang-badge {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 900;
+      opacity: 0.85;
+      margin-right: 6px;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="overlay-container">
+    <div id="subtitle-card">
+      <div id="romaji-line" class="romaji-text"></div>
+      <div id="source-line" class="source-text">
+        <span id="source-content"></span>
+      </div>
+      <div id="translations-box" class="translations-container"></div>
+    </div>
+  </div>
+
+  <script>
+    let ws = null;
+    let autoFadeTimer = null;
+    let currentStyle = {
+      fontFamily: 'Prompt',
+      fontSize: 34,
+      translationFontSize: 28,
+      textColor: '#ffffff',
+      secondaryTextColor: '#ffffff',
+      thirdTextColor: '#cccccc',
+      outlineColor: '#000000',
+      outlineWidth: 4,
+      glowColor: '#ffffff',
+      glowBlur: 8,
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      borderRadius: 14,
+      padding: 16,
+      layoutPreset: 'stacked',
+      alignment: 'center',
+      autoFadeSeconds: 6,
+      showSourceText: true,
+      showRomaji: false,
+    };
+
+    const container = document.getElementById('overlay-container');
+    const card = document.getElementById('subtitle-card');
+    const romajiLine = document.getElementById('romaji-line');
+    const sourceLine = document.getElementById('source-line');
+    const sourceContent = document.getElementById('source-content');
+    const translationsBox = document.getElementById('translations-box');
+
+    function loadDynamicFont(family) {
+      if (!family) return;
+      const cleanFam = family.replace(/["']/g, '');
+      const linkId = `gfont-${cleanFam.replace(/\s+/g, '+')}`;
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement('link');
+        link.id = linkId;
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${cleanFam.replace(/\s+/g, '+')}:wght@600;700;800;900&display=swap`;
+        document.head.appendChild(link);
+      }
+    }
+
+    function applyStyles(style) {
+      if (!style) return;
+      currentStyle = { ...currentStyle, ...style };
+
+      if (currentStyle.fontFamily) {
+        loadDynamicFont(currentStyle.fontFamily);
+        document.body.style.fontFamily = `"${currentStyle.fontFamily}", 'Prompt', 'M PLUS Rounded 1c', sans-serif`;
+      }
+
+      if (currentStyle.alignment === 'left') {
+        container.style.alignItems = 'flex-start';
+        card.style.textAlign = 'left';
+      } else if (currentStyle.alignment === 'right') {
+        container.style.alignItems = 'flex-end';
+        card.style.textAlign = 'right';
+      } else {
+        container.style.alignItems = 'center';
+        card.style.textAlign = 'center';
+      }
+
+      card.style.backgroundColor = currentStyle.backgroundColor;
+      card.style.borderRadius = `${currentStyle.borderRadius}px`;
+      card.style.padding = `${currentStyle.padding}px ${currentStyle.padding * 1.5}px`;
+      card.style.borderColor = `${currentStyle.glowColor}44`;
+      card.style.boxShadow = `0 10px 35px rgba(0,0,0,0.6), 0 0 ${currentStyle.glowBlur}px ${currentStyle.glowColor}33`;
+
+      sourceLine.style.fontSize = `${currentStyle.fontSize}px`;
+      sourceLine.style.color = currentStyle.textColor;
+      sourceLine.style.display = currentStyle.showSourceText ? '-webkit-box' : 'none';
+
+      const ow = currentStyle.outlineWidth;
+      const oc = currentStyle.outlineColor;
+      const gc = currentStyle.glowColor;
+      const gb = currentStyle.glowBlur;
+
+      const shadow = `
+        -${ow}px -${ow}px 0 ${oc},
+         ${ow}px -${ow}px 0 ${oc},
+        -${ow}px  ${ow}px 0 ${oc},
+         ${ow}px  ${ow}px 0 ${oc},
+         0 0 ${gb}px ${gc}
+      `;
+      sourceLine.style.textShadow = shadow;
+      romajiLine.style.display = currentStyle.showRomaji && romajiLine.textContent ? 'block' : 'none';
+    }
+
+    function clearOverlay() {
+      container.classList.remove('visible');
+      if (autoFadeTimer) {
+        clearTimeout(autoFadeTimer);
+        autoFadeTimer = null;
+      }
+      setTimeout(() => {
+        sourceContent.textContent = '';
+        translationsBox.innerHTML = '';
+        romajiLine.textContent = '';
+      }, 300);
+    }
+
+    function renderSubtitle(subtitle) {
+      if (!subtitle || (!subtitle.rawText && (!subtitle.translations || Object.keys(subtitle.translations).length === 0))) {
+        clearOverlay();
+        return;
+      }
+
+      if (autoFadeTimer) {
+        clearTimeout(autoFadeTimer);
+        autoFadeTimer = null;
+      }
+
+      if (subtitle.romaji && currentStyle.showRomaji) {
+        romajiLine.textContent = subtitle.romaji;
+        romajiLine.style.display = 'block';
+      } else {
+        romajiLine.style.display = 'none';
+      }
+
+      sourceContent.textContent = subtitle.rawText || '';
+
+      translationsBox.innerHTML = '';
+      if (subtitle.translations && Object.keys(subtitle.translations).length > 0) {
+        for (const [lang, text] of Object.entries(subtitle.translations)) {
+          if (!text) continue;
+          const line = document.createElement('div');
+          line.className = `translation-line`;
+          line.style.fontSize = `${currentStyle.translationFontSize}px`;
+
+          const ow = Math.max(2, currentStyle.outlineWidth - 1);
+          const oc = currentStyle.outlineColor;
+          line.style.textShadow = `
+            -${ow}px -${ow}px 0 ${oc},
+             ${ow}px -${ow}px 0 ${oc},
+            -${ow}px  ${ow}px 0 ${oc},
+             ${ow}px  ${ow}px 0 ${oc},
+             0 0 ${currentStyle.glowBlur}px ${lang === 'th' ? currentStyle.secondaryTextColor : currentStyle.thirdTextColor}88
+          `;
+          line.style.color = lang === 'th' ? currentStyle.secondaryTextColor : currentStyle.thirdTextColor;
+
+          const badge = document.createElement('span');
+          badge.className = 'lang-badge';
+          badge.textContent = `[${lang.toUpperCase()}]`;
+
+          const spanText = document.createElement('span');
+          spanText.textContent = text;
+
+          line.appendChild(badge);
+          line.appendChild(spanText);
+          translationsBox.appendChild(line);
+        }
+      }
+
+      container.classList.add('visible');
+
+      if (subtitle.isFinal && currentStyle.autoFadeSeconds > 0) {
+        autoFadeTimer = setTimeout(() => {
+          clearOverlay();
+        }, currentStyle.autoFadeSeconds * 1000);
+      }
+    }
+
+    function connectWebSocket() {
+      const host = window.location.host || '127.0.0.1:18890';
+      const wsUrl = `ws://${host}/ws`;
+
+      try {
+        ws = new WebSocket(wsUrl);
+      } catch (e) {
+        clearOverlay();
+        setTimeout(connectWebSocket, 1500);
+        return;
+      }
+
+      ws.onopen = () => {};
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          switch (data.type) {
+            case 'init_state':
+              applyStyles(data.style);
+              break;
+            case 'style_updated':
+              applyStyles(data.payload);
+              break;
+            case 'subtitle_live':
+            case 'subtitle_final':
+              renderSubtitle(data.payload);
+              break;
+            case 'subtitles_cleared':
+              clearOverlay();
+              break;
+          }
+        } catch (err) {
+          console.error('[Overlay] Parse error:', err);
+        }
+      };
+
+      ws.onclose = () => {
+        clearOverlay();
+        setTimeout(connectWebSocket, 1500);
+      };
+
+      ws.onerror = () => {
+        clearOverlay();
+        try { ws.close(); } catch (e) {}
+      };
+    }
+
+    connectWebSocket();
+  </script>
+</body>
+</html>

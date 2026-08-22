@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark Theme Variables (Default) */
+:root {
+  --bg-main: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-card: #0e0e0e;
+  --bg-input: #161616;
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-active: rgba(255, 255, 255, 0.35);
+  --text-main: #ffffff;
+  --text-muted: #8e8e93;
+  --btn-primary-bg: #ffffff;
+  --btn-primary-text: #000000;
+  --btn-secondary-bg: #181818;
+  --btn-secondary-text: #ffffff;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.25);
+  --scrollbar-track: #000000;
+}
+
+/* Light Theme Variables */
+html.light, .light {
+  --bg-main: #f4f4f6;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-input: #f0f0f2;
+  --border-subtle: rgba(0, 0, 0, 0.10);
+  --border-active: rgba(0, 0, 0, 0.30);
+  --text-main: #09090b;
+  --text-muted: #64748b;
+  --btn-primary-bg: #09090b;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #f4f4f6;
+  --btn-secondary-text: #09090b;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.25);
+  --scrollbar-track: #f4f4f6;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', 'Prompt', 'Noto Sans JP', sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+/* Dynamic Glass Panel */
+.glass-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-panel:hover {
+  border-color: var(--border-active);
+}
+
+/* High-Contrast Action Button */
+.btn-white {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  font-weight: 800;
+  border-radius: 10px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.btn-white:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-white:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button */
+.btn-dark {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--border-subtle);
+  font-weight: 700;
+  border-radius: 10px;
+  transition: all 0.15s ease;
+}
+
+.btn-dark:hover {
+  border-color: var(--border-active);
+  filter: brightness(1.05);
+}
+
+/* Theme inputs */
+select, input[type="text"] {
+  background-color: var(--bg-input) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+select:focus, input[type="text"]:focus {
+  border-color: var(--border-active) !important;
+}
+
+input[type="range"] {
+  accent-color: var(--text-main);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
