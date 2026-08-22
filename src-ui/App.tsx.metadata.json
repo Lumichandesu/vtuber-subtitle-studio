@@ -1,4 +1,4 @@
 {
-  "summary": "App.tsx using full i18n translations across all modals and banners.",
-  "updatedAt": "2026-08-22T04:21:19.082379300Z"
+  "summary": "App.tsx with guaranteed non-empty fallbacks for all i18n strings in Pro modal and header.",
+  "updatedAt": "2026-08-22T04:25:49.151747800Z"
 }

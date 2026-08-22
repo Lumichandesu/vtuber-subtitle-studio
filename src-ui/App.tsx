@@ -143,7 +143,7 @@ export const App: React.FC = () => {
     updateLanguage(newLang);
   };
 
-  const t = UI_TRANSLATIONS[uiLang];
+  const t = UI_TRANSLATIONS[uiLang] || UI_TRANSLATIONS.th;
 
   return (
     <div className={`min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex flex-col font-sans select-none ${theme}`}>
@@ -172,7 +172,7 @@ export const App: React.FC = () => {
               FREE COMMUNITY EDITION
             </span>
             <span className="font-semibold text-[11px]">
-              {t.freeEditionBanner}
+              {t.freeEditionBanner || 'กำลังใช้งานเวอร์ชันฟรี (Neural AI ฟรี, ถอดรหัสคำพูดความเร็วสูง)'}
             </span>
           </div>
           <button
@@ -180,7 +180,7 @@ export const App: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-pink-500 text-white font-black text-[11px] shadow-sm hover:opacity-90 transition-opacity"
           >
             <Crown className="w-3.5 h-3.5" />
-            <span>{t.viewProGumroad}</span>
+            <span>{t.viewProGumroad || 'ดูฟีเจอร์ PRO & ลิงก์ Gumroad'}</span>
           </button>
         </div>
       )}
@@ -359,10 +359,10 @@ export const App: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-[var(--text-main)]">
-                    {t.proModalTitle}
+                    {t.proModalTitle || 'VTuber Subtitle Studio PRO'}
                   </h3>
                   <p className="text-xs text-amber-400 font-semibold">
-                    {t.proModalSubtitle}
+                    {t.proModalSubtitle || 'ปลดล็อกทุกฟีเจอร์ระดับมืออาชีพสำหรับสตรีมเมอร์ & VTuber'}
                   </p>
                 </div>
               </div>
@@ -378,32 +378,32 @@ export const App: React.FC = () => {
               <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature1Title}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature1Desc}</p>
+                  <b className="text-[var(--text-main)]">{t.proFeature1Title || 'Simultaneous Dual Translation:'}</b>
+                  <p className="text-[var(--text-muted)]">{t.proFeature1Desc || 'พูด 1 ประโยค แปลและแสดงผลออกทั้ง ญี่ปุ่น [JP] + อังกฤษ [EN] พร้อมกันบน OBS'}</p>
                 </div>
               </div>
 
               <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature2Title}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature2Desc}</p>
+                  <b className="text-[var(--text-main)]">{t.proFeature2Title || '48kHz Studio Vocal DSP Mastering:'}</b>
+                  <p className="text-[var(--text-muted)]">{t.proFeature2Desc || 'ตัดเสียงลมกระแทก (80Hz) + บูสต์ความถี่พยัญชนะ (3.8kHz EQ) + Leveler ไมค์ดูดเสียงชัดเจน'}</p>
                 </div>
               </div>
 
               <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
                 <Sparkles className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
                 <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature3Title}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature3Desc}</p>
+                  <b className="text-[var(--text-main)]">{t.proFeature3Title || 'VOD Subtitle Export (.SRT / .VTT):'}</b>
+                  <p className="text-[var(--text-muted)]">{t.proFeature3Desc || 'บันทึกไทม์ไลน์คำพูดตลอดทั้งสตรีม กดส่งออกไฟล์ซับไปตัดต่อคลิปไฮไลต์ลง YouTube ได้ทันที'}</p>
                 </div>
               </div>
 
               <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature4Title}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature4Desc}</p>
+                  <b className="text-[var(--text-main)]">{t.proFeature4Title || 'VTuber Slang Dictionary & Soundboard:'}</b>
+                  <p className="text-[var(--text-muted)]">{t.proFeature4Desc || 'กำหนดคำศัพท์เฉพาะช่อง และปุ่มลัดยิงคำแปลขึ้นจอสดๆ ได้ในคลิกเดียว'}</p>
                 </div>
               </div>
             </div>
@@ -416,7 +416,7 @@ export const App: React.FC = () => {
                 }}
                 className="px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] text-xs font-bold text-[var(--text-main)] hover:bg-[var(--btn-secondary-bg)] transition-colors"
               >
-                {edition === 'pro' ? t.switchModeFree : t.switchModeSimulation}
+                {edition === 'pro' ? (t.switchModeFree || '🔄 สลับไปโหมด Free') : (t.switchModeSimulation || '✨ สลับเป็นโหมด PRO จำลอง')}
               </button>
 
               <a
@@ -425,7 +425,7 @@ export const App: React.FC = () => {
                 rel="noreferrer"
                 className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-pink-500/25 hover:opacity-95 transition-opacity"
               >
-                <span>{t.buyOnGumroad}</span>
+                <span>{t.buyOnGumroad || 'ซื้อเวอร์ชัน PRO บน Gumroad'}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>

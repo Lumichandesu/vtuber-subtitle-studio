@@ -21,7 +21,7 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
   onSendManualText,
   onClear,
 }) => {
-  const t = UI_TRANSLATIONS[uiLang];
+  const t = UI_TRANSLATIONS[uiLang] || UI_TRANSLATIONS.th;
   const [bgMode, setBgMode] = useState<BgMode>('dark');
   const [manualInput, setManualInput] = useState('');
 
@@ -58,6 +58,27 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
      ${ow}px  ${ow}px 0 ${oc},
      0 0 ${gb}px ${gc}
   `;
+
+  const quickSamples = uiLang === 'ja'
+    ? [
+        { label: '🌸 こんにちは', text: '皆さんこんにちは！今日も楽しくゲーム配信していきましょう！' },
+        { label: '🙏 ありがとう', text: 'みんな配信に来て応援してくれて本当にありがとう！' },
+        { label: '🎉 勝った！', text: 'やったー！見事な大勝利です！GG！' },
+        { label: '🤣 草ｗｗｗ', text: '草ｗｗｗ 面白すぎてお腹痛い' },
+      ]
+    : uiLang === 'en'
+    ? [
+        { label: '🌸 Hello Everyone', text: 'Hello everyone! Welcome to today\'s livestream, let\'s have fun!' },
+        { label: '🙏 Thank You', text: 'Thank you so much everyone for tuning in and supporting today!' },
+        { label: '🎉 We Won!', text: 'Yay! We won! What a magnificent victory! GG!' },
+        { label: '🤣 LOL Haha', text: 'LOL so hilarious, can\'t stop laughing!' },
+      ]
+    : [
+        { label: '🌸 สวัสดีทุกคน', text: 'สวัสดีค่าทุกคน! วันนี้มาเล่นเกมกันอย่างสนุกสนานเลยนะ' },
+        { label: '🙏 ขอบคุณมากๆ', text: 'ขอบคุณทุกคนมากๆ เลยนะที่แวะมาให้กำลังใจในวันนี้!' },
+        { label: '🎉 ชนะแล้ว!', text: 'เย้! ชนะแล้ววว ยอดเยี่ยมมากทุกคน GG!' },
+        { label: '🤣 55555+ (ขำ)', text: '55555+ ขำมากไม่ไหวแล้ว' },
+      ];
 
   return (
     <div className="glass-panel p-4 space-y-3.5 flex flex-col">
@@ -124,7 +145,7 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
         </div>
       </div>
 
-      {/* 2. Preview Viewport Canvas (Enlarged Height: min-h-[380px]) */}
+      {/* 2. Preview Viewport Canvas */}
       <div
         className={`min-h-[380px] rounded-xl border border-[var(--border-subtle)] relative overflow-hidden flex flex-col justify-end p-6 md:p-8 transition-all shadow-inner ${
           bgMode === 'dark'
@@ -140,13 +161,12 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
           fontFamily: `"${style.fontFamily}", 'Prompt', 'Outfit', sans-serif`,
         }}
       >
-        {/* Watermark */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/80 text-[10px] font-mono text-[#8e8e93] backdrop-blur-md pointer-events-none border border-white/10">
           <Monitor className="w-3.5 h-3.5 text-white" />
           <span>OBS CANVAS (1920x1080)</span>
         </div>
 
-        {/* Subtitle Card (Spacious Card Layout) */}
+        {/* Subtitle Card */}
         <div
           className="relative max-w-[95%] transition-all duration-200"
           style={{
@@ -158,14 +178,12 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
             textAlign: style.alignment,
           }}
         >
-          {/* Romaji */}
           {style.showRomaji && subtitleToRender.romaji && (
             <div className="text-xs font-semibold text-white/80 mb-1.5">
               {subtitleToRender.romaji}
             </div>
           )}
 
-          {/* Source Line */}
           {style.showSourceText && (
             <div
               className="font-extrabold leading-snug mb-3 line-clamp-2"
@@ -182,7 +200,6 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
             </div>
           )}
 
-          {/* Simultaneous Translations with Clean [TH], [JP], [EN] Language Tags */}
           <div className="space-y-2">
             {Object.entries(subtitleToRender.translations || {}).map(([lang, text]) => {
               const transShadow = `
@@ -236,14 +253,8 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
           </button>
         </form>
 
-        {/* Quick Sample Clickers */}
         <div className="flex flex-wrap gap-1.5">
-          {[
-            { label: '🌸 สวัสดี/こんにちは', text: 'สวัสดีค่าทุกคน! วันนี้มาเล่นเกมกันอย่างสนุกสนานเลยนะ' },
-            { label: '🙏 ขอบคุณ', text: 'ขอบคุณทุกคนมากๆ เลยนะที่แวะมาให้กำลังใจในวันนี้!' },
-            { label: '🎉 We Won!', text: 'やったー！勝った！Let\'s go victory!' },
-            { label: '🤣 555+ (草)', text: '草ｗｗｗ 55555+ ขำมากไม่ไหวแล้ว' },
-          ].map((sample, idx) => (
+          {quickSamples.map((sample, idx) => (
             <button
               key={idx}
               type="button"

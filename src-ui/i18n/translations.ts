@@ -1,6 +1,119 @@
 export type UILang = 'th' | 'ja' | 'en';
 
-export const UI_TRANSLATIONS = {
+export interface TranslationDictionary {
+  appTitle: string;
+  badge: string;
+  streamSimultaneous: string;
+  step1Title: string;
+  step1Desc: string;
+  talkingBadge: string;
+  testMicBtn: string;
+  stopMicBtn: string;
+  selectMic: string;
+  rescan: string;
+  vuLevel: string;
+  gateOpen: string;
+  gateClosed: string;
+  testResultTitle: string;
+  engineActive: string;
+  spokenLabel: string;
+  listeningPrompt: string;
+  idlePrompt: string;
+  
+  sttEngineModeTitle: string;
+  studioMicHiFi: string;
+  qualityModeTitle: string;
+  qualityModeDesc: string;
+  speedModeTitle: string;
+  speedModeDesc: string;
+
+  matrixTitle: string;
+  matrixDesc: string;
+  slangDictBtn: string;
+  aiModelLabel: string;
+  sourceLangLabel: string;
+  targetLangLabel: string;
+  
+  step2Title: string;
+  step2Desc: string;
+  presetsLabel: string;
+  fontPickerLabel: string;
+  fontCatAll: string;
+  fontCatJp: string;
+  fontCatTh: string;
+  fontCatEn: string;
+  fontCatLocal: string;
+  mainFontSize: string;
+  transFontSize: string;
+  strokeWidth: string;
+  glowBlur: string;
+  colorMain: string;
+  colorTh: string;
+  colorEn: string;
+  colorGlow: string;
+  autoFade: string;
+  showSource: string;
+  showRomaji: string;
+  maxLinesNote: string;
+  
+  step3Title: string;
+  step3Desc: string;
+  clearBtn: string;
+  inputPlaceholder: string;
+  broadcastBtn: string;
+  
+  soundboardTitle: string;
+  soundboardSub: string;
+  
+  historyTitle: string;
+  linesInMemory: string;
+  noHistory: string;
+  
+  step4Btn: string;
+  deployTitle: string;
+  deployDesc: string;
+  copyUrlBtn: string;
+  copiedUrlBtn: string;
+  resolutionSetting: string;
+  threeSteps: string;
+  step1Guide: string;
+  step1GuideSub: string;
+  step2Guide: string;
+  step2GuideSub: string;
+  step3Guide: string;
+  step3GuideSub: string;
+  copyCss: string;
+  copiedCss: string;
+  doneBtn: string;
+  
+  freeEditionBanner: string;
+  viewProGumroad: string;
+  proModalTitle: string;
+  proModalSubtitle: string;
+  proFeature1Title: string;
+  proFeature1Desc: string;
+  proFeature2Title: string;
+  proFeature2Desc: string;
+  proFeature3Title: string;
+  proFeature3Desc: string;
+  proFeature4Title: string;
+  proFeature4Desc: string;
+  switchModeSimulation: string;
+  switchModeFree: string;
+  buyOnGumroad: string;
+  oneLangInFree: string;
+  glossaryModalTitle: string;
+  glossaryModalDesc: string;
+  addTermBtn: string;
+  sourcePatternPlaceholder: string;
+  replacementPlaceholder: string;
+  
+  ramUsage: string;
+  latency: string;
+  sidecarActive: string;
+}
+
+export const UI_TRANSLATIONS: Record<UILang, TranslationDictionary> = {
   th: {
     appTitle: 'VTuber AI Subtitle & Live Translator',
     badge: 'ULTRA LOW-LATENCY',
@@ -86,6 +199,28 @@ export const UI_TRANSLATIONS = {
     copyCss: 'คัดลอก Custom CSS',
     copiedCss: 'คัดลอก CSS แล้ว!',
     doneBtn: 'เสร็จสิ้น',
+    
+    freeEditionBanner: 'กำลังใช้งานเวอร์ชันฟรี (Neural AI ฟรี, ถอดรหัสคำพูดความเร็วสูง)',
+    viewProGumroad: 'ดูฟีเจอร์ PRO & ลิงก์ Gumroad',
+    proModalTitle: 'VTuber Subtitle Studio PRO',
+    proModalSubtitle: 'ปลดล็อกทุกฟีเจอร์ระดับมืออาชีพสำหรับสตรีมเมอร์ & VTuber',
+    proFeature1Title: 'Simultaneous Dual Translation:',
+    proFeature1Desc: 'พูด 1 ประโยค แปลและแสดงผลออกทั้ง ญี่ปุ่น [JP] + อังกฤษ [EN] พร้อมกันบน OBS',
+    proFeature2Title: '48kHz Studio Vocal DSP Mastering:',
+    proFeature2Desc: 'ตัดเสียงลมกระแทก (80Hz) + บูสต์ความถี่พยัญชนะ (3.8kHz EQ) + Leveler ไมค์ดูดเสียงชัดเจน',
+    proFeature3Title: 'VOD Subtitle Export (.SRT / .VTT):',
+    proFeature3Desc: 'บันทึกไทม์ไลน์คำพูดตลอดทั้งสตรีม กดส่งออกไฟล์ซับไปตัดต่อคลิปไฮไลต์ลง YouTube ได้ทันที',
+    proFeature4Title: 'VTuber Slang Dictionary & Soundboard:',
+    proFeature4Desc: 'กำหนดคำศัพท์เฉพาะช่อง และปุ่มลัดยิงคำแปลขึ้นจอสดๆ ได้ในคลิกเดียว',
+    switchModeSimulation: '✨ สลับเป็นโหมด PRO จำลอง',
+    switchModeFree: '🔄 สลับไปโหมด Free',
+    buyOnGumroad: 'ซื้อเวอร์ชัน PRO บน Gumroad',
+    oneLangInFree: '1 ภาษาในโหมด Free',
+    glossaryModalTitle: 'พจนานุกรมคำสแลง & ศัพท์เฉพาะช่อง',
+    glossaryModalDesc: 'กำหนดคำศัพท์เฉพาะ สแลง แฟนด้อม หรือชื่อเล่นเพื่อแปลให้ตรงเป๊ะบน OBS',
+    addTermBtn: 'เพิ่มคำศัพท์',
+    sourcePatternPlaceholder: 'คำค้นหา (เช่น 草, てぇてぇ, GG)',
+    replacementPlaceholder: 'คำแปลแทนที่ (เช่น 55555+)',
     
     ramUsage: 'RAM',
     latency: 'Latency',
@@ -178,6 +313,28 @@ export const UI_TRANSLATIONS = {
     copiedCss: 'CSS コピー完了!',
     doneBtn: '完了',
     
+    freeEditionBanner: '無料コミュニティ版を使用中 (高速 Neural AI・リアルタイム認識)',
+    viewProGumroad: 'PRO 版の機能 & Gumroad リンクを見る',
+    proModalTitle: 'VTuber Subtitle Studio PRO',
+    proModalSubtitle: 'VTuber・ストリーマー向けプロ仕様の全機能をアンロック',
+    proFeature1Title: '同時2言語リアルタイム翻訳 (Simultaneous Output):',
+    proFeature1Desc: '1回の発声で [日本語] と [英語] (またはタイ語) を OBS 上に同時表示',
+    proFeature2Title: '48kHz スタジオ品質 音声 DSP マスタリング:',
+    proFeature2Desc: '80Hz 低域ノイズカット + 3.8kHz 子音明瞭化 EQ + コンプレッサーでクリアな音声認識',
+    proFeature3Title: 'VOD 字幕エクスポート (.SRT / .VTT):',
+    proFeature3Desc: '配信中の全発言タイムラインをワンクリックで SRT 出力。YouTube 切り抜き動画制作に直結',
+    proFeature4Title: 'VTuber 専用用語辞書 & 定型句サウンドボード:',
+    proFeature4Desc: 'チャンネル固有の用語登録や、ワンクリックで定型句字幕を即時送出',
+    switchModeSimulation: '✨ PRO モードに切り替え',
+    switchModeFree: '🔄 FREE モードに切り替え',
+    buyOnGumroad: 'Gumroad で PRO 版を購入する',
+    oneLangInFree: 'Free 版は 1 言語',
+    glossaryModalTitle: 'VTuber スラング & 固有用語辞書',
+    glossaryModalDesc: 'VTuber 固有の挨拶、スラング、固有名詞を正しい翻訳テキストに自動置換',
+    addTermBtn: '用語を追加',
+    sourcePatternPlaceholder: '検索単語 (例: 草, てぇてぇ, GG)',
+    replacementPlaceholder: '置換後のテキスト (例: ｗｗｗ, てえてえ)',
+    
     ramUsage: 'RAM',
     latency: 'Latency',
     sidecarActive: 'Bun Sidecar 稼働中',
@@ -268,6 +425,28 @@ export const UI_TRANSLATIONS = {
     copyCss: 'Copy Custom CSS',
     copiedCss: 'Copied CSS!',
     doneBtn: 'Done',
+    
+    freeEditionBanner: 'Using Free Community Edition (Neural AI, High-Speed Speech)',
+    viewProGumroad: 'View PRO Features & Gumroad Link',
+    proModalTitle: 'VTuber Subtitle Studio PRO',
+    proModalSubtitle: 'Unlock all professional features for VTubers and Streamers',
+    proFeature1Title: 'Simultaneous Dual Translation:',
+    proFeature1Desc: 'Speak 1 sentence, output both Japanese [JP] and English [EN] simultaneously on OBS',
+    proFeature2Title: '48kHz Studio Vocal DSP Mastering:',
+    proFeature2Desc: '80Hz low rumble cut + 3.8kHz consonant presence boost + dynamic voice leveler',
+    proFeature3Title: 'VOD Subtitle Export (.SRT / .VTT):',
+    proFeature3Desc: 'Record stream timeline and export SRT in 1 click for YouTube highlight editing',
+    proFeature4Title: 'VTuber Slang Dictionary & Soundboard:',
+    proFeature4Desc: 'Custom channel terminology and 1-click broadcast hotkeys',
+    switchModeSimulation: '✨ Switch to PRO Mode',
+    switchModeFree: '🔄 Switch to Free Mode',
+    buyOnGumroad: 'Get PRO on Gumroad',
+    oneLangInFree: '1 target in Free',
+    glossaryModalTitle: 'Stream Slang & Custom Term Dictionary',
+    glossaryModalDesc: 'Auto-replace streamer terms, slang, and character names with exact translations on OBS',
+    addTermBtn: 'Add Term',
+    sourcePatternPlaceholder: 'Search Term (e.g., 草, てぇてぇ, GG)',
+    replacementPlaceholder: 'Replacement Text (e.g., LOL, kawaii)',
     
     ramUsage: 'RAM',
     latency: 'Latency',
