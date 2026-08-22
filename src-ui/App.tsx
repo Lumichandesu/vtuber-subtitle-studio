@@ -21,9 +21,10 @@ export const GUMROAD_URL = 'https://lumichandesu.gumroad.com/l/VTuber-Subtitle-S
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [uiLang, setUiLang] = useState<UILang>('th');
-  const [edition, setEdition] = useState<AppEdition>('pro');
-  const [sttMode, setSttMode] = useState<SttMode>('quality');
-  const [studioMicMode, setStudioMicMode] = useState(true);
+  const defaultEdition: AppEdition = (import.meta.env.VITE_APP_EDITION as AppEdition) || 'pro';
+  const [edition, setEdition] = useState<AppEdition>(defaultEdition);
+  const [sttMode, setSttMode] = useState<SttMode>(defaultEdition === 'free' ? 'speed' : 'quality');
+  const [studioMicMode, setStudioMicMode] = useState(defaultEdition === 'pro');
   const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
