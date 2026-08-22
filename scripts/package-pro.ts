@@ -83,6 +83,7 @@ fs.writeFileSync(path.join(PRO_DIR, 'run-vtuber-app.bat'), batLauncher);
 const readmeContent = `================================================================================
    🌸 VTUBER REAL-TIME OBS AI SUBTITLE STUDIO PRO (COMMERCIAL EDITION) 🌸
    Made with Love By Lumichandesu 💖
+   Store: https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio
 ================================================================================
 
 ขอบคุณที่สนับสนุน VTuber Real-Time OBS AI Subtitle Studio Pro!
@@ -136,6 +137,7 @@ fs.writeFileSync(path.join(PRO_DIR, 'README_PRO.txt'), readmeContent);
 const licenseContent = `COMMERCIAL END USER LICENSE AGREEMENT (EULA)
 VTuber Real-Time OBS AI Subtitle Studio Pro
 Created by Lumichandesu
+Store: https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio
 
 1. GRANT OF LICENSE:
 This license grants you the non-exclusive, non-transferable right to use VTuber Real-Time OBS AI Subtitle Studio Pro for personal, commercial broadcasting, content creation, and live streaming on YouTube, Twitch, TikTok, Kick, Facebook, and any other streaming platform.
@@ -153,7 +155,7 @@ fs.writeFileSync(path.join(PRO_DIR, 'COMMERCIAL_LICENSE.txt'), licenseContent);
 
 // 5. Compress into ZIP Package
 console.log('🗜️  [5/5] Compressing into Commercial Gumroad ZIP Distribution...');
-const zipOutput = path.join(ROOT_DIR, 'VTuber-Subtitle-Studio-PRO-v1.0.zip');
+const zipOutput = path.join(ROOT_DIR, 'VTuber-Subtitle-Studio-PRO.zip');
 
 const psZipCmd = `Compress-Archive -Path '${PRO_DIR}\\*' -DestinationPath '${zipOutput}' -Force`;
 await $`powershell -Command ${psZipCmd}`;
@@ -163,6 +165,7 @@ console.log('   ✨ GUMROAD PRO ZIP PACKAGE CREATED SUCCESSFULLY! ✨');
 console.log('   ');
 console.log(`   📦 Gumroad Release ZIP: ${zipOutput}`);
 console.log(`   📂 Extracted PRO Folder: ${PRO_DIR}`);
+console.log(`   🔗 Store Link: https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio`);
 console.log('   ');
 console.log('   Ready for upload and sale on Gumroad! 💖');
 console.log('🌸 ======================================================= 🌸\n');

@@ -21,16 +21,16 @@
 
 ## 🌟 Overview
 
-**VTuber Subtitle Studio** is a standalone, ultra-low-latency real-time AI subtitle generator and live translator tailored specifically for VTubers and live streamers. It connects seamlessly to **OBS Studio** via a 100% transparent browser overlay.
+**VTuber Subtitle Studio** is a standalone, ultra-low-latency real-time AI subtitle generator and live translator tailored specifically for VTubers and live streamers. It connects seamlessly to **OBS Studio** via a 100% transparent browser overlay with zero watermarks.
 
 ---
 
-## ✨ Features
+## ✨ Free Community Edition Features
 
 - 🎙️ **Dual-Worker Ping-Pong STT Engine**: Continuous speech recognition that never stalls or freezes mid-stream.
-- ⚡ **Multi-Cloud Neural Translation (< 40ms)**: Sub-second translation with zero memory buffer locks.
+- ⚡ **Neural AI Translation (< 40ms)**: Fast, free neural translation with zero memory buffer locks.
 - 🌸 **Anime Font & Styling Studio**: Real-time customizable neon glow, stroke outlines, and Google Fonts.
-- 📺 **1-Click OBS Browser Source Overlay**: Transparent, zero ghosting, auto-fade, and automatic cleanup on exit.
+- 📺 **1-Click OBS Browser Source Overlay**: 100% transparent, zero watermarks, zero ghosting, and auto-fade.
 - 🛡️ **Hardened Loopback Security**: Binds strictly to `127.0.0.1` with active path traversal protections.
 
 ---
@@ -40,13 +40,14 @@
 Support the creator and get the **Full PRO Edition on Gumroad**:
 
 - 🌟 **Simultaneous Dual-Target Translation** (Speak Thai ➔ Output Japanese & English simultaneously on screen)
-- 🎛️ **48kHz Studio Vocal DSP Mastering** (80Hz Highpass + 3.8kHz Presence EQ + Dynamic Compressor)
+- 🎯 **48kHz Studio Vocal DSP Mastering** (80Hz Highpass + 3.8kHz Presence EQ + Dynamic Compressor)
+- 🤖 **Custom AI Translation Models** (Connect your personal Google Gemini 2.5 Flash / GPT-4o-mini API keys)
 - 🎬 **VOD Subtitle Export (.SRT / .VTT)** (Export complete stream transcripts in 1 click for YouTube clips)
 - 📖 **Custom VTuber Slang & Glossary Dictionary**
 - 🎹 **Stream Soundboard Hotkeys** (1-Click trigger for common stream phrases)
 - 📦 **1-Click Standalone Windows `.EXE`** (Zero installation required)
 
-👉 **[Get VTuber Subtitle Studio PRO on Gumroad](https://gumroad.com)** 💖
+👉 **[Get VTuber Subtitle Studio PRO on Gumroad](https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio)** 💖
 
 ---
 

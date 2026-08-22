@@ -1,9 +1,10 @@
 import React from 'react';
-import { Mic, MicOff, Volume2, Activity, RefreshCw, CheckCircle2, Zap, Sparkles, Sliders } from 'lucide-react';
+import { Mic, MicOff, Volume2, Activity, RefreshCw, CheckCircle2, Zap, Sparkles, Sliders, Crown } from 'lucide-react';
 import type { AudioDevice, SttMode } from '../hooks/useAudioRecorder';
 import type { SubtitlePayload } from '../../src-server/types/schema';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
+import type { AppEdition } from '../App';
 
 interface MicTestStudioProps {
   isRecording: boolean;
@@ -15,6 +16,7 @@ interface MicTestStudioProps {
   vadThreshold: number;
   liveLatencyMs: number;
   uiLang: UILang;
+  edition?: AppEdition;
   sttMode: SttMode;
   studioMicMode: boolean;
   onChangeSttMode: (mode: SttMode) => void;
@@ -23,6 +25,7 @@ interface MicTestStudioProps {
   onStart: () => void;
   onStop: () => void;
   onRefreshDevices: () => void;
+  onOpenProModal?: () => void;
   latestSubtitle: SubtitlePayload | null;
   sourceLang: string;
 }
@@ -37,6 +40,7 @@ export const MicTestStudio: React.FC<MicTestStudioProps> = ({
   vadThreshold,
   liveLatencyMs,
   uiLang,
+  edition = 'pro',
   sttMode,
   studioMicMode,
   onChangeSttMode,
@@ -45,12 +49,21 @@ export const MicTestStudio: React.FC<MicTestStudioProps> = ({
   onStart,
   onStop,
   onRefreshDevices,
+  onOpenProModal,
   latestSubtitle,
   sourceLang,
 }) => {
   const t = UI_TRANSLATIONS[uiLang];
   const meterPercent = Math.min(100, Math.max(0, volumeLevel * 350));
   const thresholdPercent = Math.min(100, vadThreshold * 350);
+
+  const handleQualityModeClick = () => {
+    if (edition === 'free') {
+      onOpenProModal?.();
+      return;
+    }
+    onChangeSttMode('quality');
+  };
 
   return (
     <div className="glass-panel p-4 space-y-3.5">
@@ -105,28 +118,35 @@ export const MicTestStudio: React.FC<MicTestStudioProps> = ({
             <Sliders className="w-3.5 h-3.5 text-cyan-400" />
             {t.sttEngineModeTitle}
           </span>
-          <label className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)] cursor-pointer font-semibold">
-            <input
-              type="checkbox"
-              checked={studioMicMode}
-              onChange={(e) => onChangeStudioMicMode(e.target.checked)}
-              className="rounded border-[var(--border-subtle)]"
-            />
-            <span>{t.studioMicHiFi}</span>
-          </label>
+          {edition === 'pro' && (
+            <label className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)] cursor-pointer font-semibold">
+              <input
+                type="checkbox"
+                checked={studioMicMode}
+                onChange={(e) => onChangeStudioMicMode(e.target.checked)}
+                className="rounded border-[var(--border-subtle)]"
+              />
+              <span>{t.studioMicHiFi}</span>
+            </label>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {/* Quality Mode */}
+          {/* Quality Mode (PRO Exclusive) */}
           <button
             type="button"
-            onClick={() => onChangeSttMode('quality')}
-            className={`p-2 rounded-lg border text-left transition-all ${
-              sttMode === 'quality'
+            onClick={handleQualityModeClick}
+            className={`p-2 rounded-lg border text-left transition-all relative ${
+              sttMode === 'quality' && edition === 'pro'
                 ? 'border-[var(--text-main)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black shadow-sm'
                 : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--border-active)]'
             }`}
           >
+            {edition === 'free' && (
+              <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-black text-[9px] border border-amber-500/40 flex items-center gap-0.5">
+                <Crown className="w-2.5 h-2.5" /> PRO
+              </span>
+            )}
             <div className="text-xs font-bold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               {t.qualityModeTitle}
@@ -136,12 +156,12 @@ export const MicTestStudio: React.FC<MicTestStudioProps> = ({
             </div>
           </button>
 
-          {/* Speed Mode */}
+          {/* Speed Mode (Available in Free & Pro) */}
           <button
             type="button"
             onClick={() => onChangeSttMode('speed')}
             className={`p-2 rounded-lg border text-left transition-all ${
-              sttMode === 'speed'
+              sttMode === 'speed' || edition === 'free'
                 ? 'border-[var(--text-main)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black shadow-sm'
                 : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--border-active)]'
             }`}

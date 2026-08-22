@@ -1,26 +1,44 @@
 import React, { useState } from 'react';
-import { Globe, BookOpen, Cpu, Sparkles, Key, Zap } from 'lucide-react';
+import { Globe, BookOpen, Cpu, Sparkles, Key, Zap, Crown } from 'lucide-react';
 import type { TranslationConfig } from '../../src-server/types/schema';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
+import type { AppEdition } from '../App';
 
 interface LanguageMatrixProps {
   language: TranslationConfig;
   uiLang: UILang;
+  edition?: AppEdition;
   onChangeLanguage: (lang: Partial<TranslationConfig>) => void;
   onOpenGlossary: () => void;
+  onOpenProModal?: () => void;
 }
 
 export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
   language,
   uiLang,
+  edition = 'pro',
   onChangeLanguage,
   onOpenGlossary,
+  onOpenProModal,
 }) => {
   const t = UI_TRANSLATIONS[uiLang];
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
+  const handleSelectEngine = (engineId: string) => {
+    if (edition === 'free' && engineId !== 'built-in') {
+      onOpenProModal?.();
+      return;
+    }
+    onChangeLanguage({ aiEngine: engineId as any });
+  };
+
   const toggleTargetLang = (code: string) => {
+    if (edition === 'free') {
+      onChangeLanguage({ targetLangs: [code] });
+      return;
+    }
+
     const current = language.targetLangs || [];
     if (current.includes(code)) {
       if (current.length > 1) {
@@ -58,6 +76,9 @@ export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
         >
           <BookOpen className="w-3.5 h-3.5 text-[var(--text-main)]" />
           <span>{t.slangDictBtn}</span>
+          {edition === 'free' && (
+            <span className="px-1 py-0.2 rounded bg-amber-500/20 text-amber-400 font-bold text-[8px]">PRO</span>
+          )}
         </button>
       </div>
 
@@ -68,32 +89,39 @@ export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
             <Cpu className="w-3.5 h-3.5 text-cyan-400" />
             {t.aiModelLabel}
           </span>
-          <button
-            onClick={() => setShowApiKeyInput(!showApiKeyInput)}
-            className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] font-semibold flex items-center gap-1"
-          >
-            <Key className="w-3 h-3" />
-            {showApiKeyInput ? 'Hide API Keys' : 'Custom Cloud API Key (Optional)'}
-          </button>
+          {edition === 'pro' && (
+            <button
+              onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+              className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] font-semibold flex items-center gap-1"
+            >
+              <Key className="w-3 h-3" />
+              {showApiKeyInput ? 'Hide API Keys' : 'Custom Cloud API Key (Optional)'}
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
           {[
-            { id: 'built-in', name: '⚡ Free Neural AI (Ultra-Fast <40ms)', desc: 'Real-time multi-cloud cluster, 0ms cache' },
-            { id: 'gemini', name: '✨ Google Gemini 2.5 Flash', desc: 'VTuber persona & nuanced stream translation' },
-            { id: 'openai', name: '🤖 OpenAI GPT-4o-mini', desc: 'High-accuracy streaming LLM translation' },
+            { id: 'built-in', name: '⚡ Neural AI (Free & Ultra-Fast <40ms)', desc: 'Real-time multi-cloud cluster, 0ms cache', isPro: false },
+            { id: 'gemini', name: '✨ Google Gemini 2.5 Flash', desc: 'VTuber persona & nuanced stream translation', isPro: true },
+            { id: 'openai', name: '🤖 OpenAI GPT-4o-mini', desc: 'High-accuracy streaming LLM translation', isPro: true },
           ].map((engine) => {
-            const isSelected = language.aiEngine === engine.id;
+            const isSelected = (edition === 'free' ? 'built-in' : language.aiEngine) === engine.id;
             return (
               <button
                 key={engine.id}
-                onClick={() => onChangeLanguage({ aiEngine: engine.id as any })}
-                className={`p-2 rounded-lg border text-left transition-all ${
+                onClick={() => handleSelectEngine(engine.id)}
+                className={`p-2 rounded-lg border text-left transition-all relative ${
                   isSelected
                     ? 'border-[var(--text-main)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black shadow-sm'
                     : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--border-active)]'
                 }`}
               >
+                {edition === 'free' && engine.isPro && (
+                  <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-black text-[9px] border border-amber-500/40 flex items-center gap-0.5">
+                    <Crown className="w-2.5 h-2.5" /> PRO
+                  </span>
+                )}
                 <div className="text-xs font-bold">{engine.name}</div>
                 <div className="text-[9px] opacity-75">{engine.desc}</div>
               </button>
@@ -101,8 +129,8 @@ export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
           })}
         </div>
 
-        {/* Optional Custom API Key Fields */}
-        {showApiKeyInput && (
+        {/* Custom API Key Fields (Pro only) */}
+        {edition === 'pro' && showApiKeyInput && (
           <div className="pt-2 border-t border-[var(--border-subtle)] grid grid-cols-1 sm:grid-cols-2 gap-2 animate-fadeIn">
             <div>
               <label className="text-[10px] text-[var(--text-muted)] block font-semibold mb-0.5">
@@ -165,8 +193,13 @@ export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
 
         {/* Target Languages */}
         <div className="space-y-1">
-          <label className="text-xs font-bold text-[var(--text-main)]">
-            {t.targetLangLabel}
+          <label className="text-xs font-bold text-[var(--text-main)] flex items-center justify-between">
+            <span>{t.targetLangLabel}</span>
+            {edition === 'free' && (
+              <span className="text-[9px] text-amber-400 font-semibold flex items-center gap-0.5">
+                <Crown className="w-2.5 h-2.5" /> 1 ภาษาในโหมด Free
+              </span>
+            )}
           </label>
           <div className="grid grid-cols-3 gap-1.5">
             {[

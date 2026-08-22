@@ -1,8 +1,9 @@
 import React from 'react';
-import { Sparkles, Tv, Sun, Moon, Zap, Cpu, Activity, Gauge, Heart } from 'lucide-react';
+import { Sparkles, Tv, Sun, Moon, Zap, Cpu, Activity, Gauge, Heart, Crown } from 'lucide-react';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import type { TelemetryStats } from '../../src-server/types/schema';
+import type { AppEdition } from '../App';
 
 interface MinimalAnimeHeaderProps {
   isConnected: boolean;
@@ -10,11 +11,14 @@ interface MinimalAnimeHeaderProps {
   liveLatencyMs: number;
   telemetry: TelemetryStats;
   uiLang: UILang;
+  edition: AppEdition;
+  onToggleEdition: (edition: AppEdition) => void;
   onChangeUILang: (lang: UILang) => void;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
   onOpenDeploy: () => void;
   onTestSubtitle: () => void;
+  onOpenProModal: () => void;
 }
 
 export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
@@ -23,17 +27,18 @@ export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
   liveLatencyMs,
   telemetry,
   uiLang,
+  edition,
+  onToggleEdition,
   onChangeUILang,
   theme,
   onToggleTheme,
   onOpenDeploy,
   onTestSubtitle,
+  onOpenProModal,
 }) => {
   const t = UI_TRANSLATIONS[uiLang];
   const isFast = liveLatencyMs <= 150;
   const isModerate = liveLatencyMs > 150 && liveLatencyMs <= 300;
-
-  const vramGb = (telemetry.vramUsedMB ? (telemetry.vramUsedMB / 1024).toFixed(1) : '0.5');
 
   return (
     <header className="px-4 md:px-5 py-2 flex flex-wrap items-center justify-between gap-2.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm transition-colors">
@@ -45,19 +50,45 @@ export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
             alt="VTuber Avatar"
             className="w-9 h-9 rounded-xl object-cover shadow-md border border-[var(--border-active)] group-hover:scale-105 transition-transform"
             onError={(e) => {
-              // Fallback to sparkles icon if img fails
               (e.currentTarget as any).style.display = 'none';
             }}
           />
         </div>
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-sm md:text-base font-black tracking-tight text-[var(--text-main)]">
               {t.appTitle}
             </h1>
-            <span className="px-1.5 py-0.5 text-[8px] font-extrabold rounded bg-[var(--btn-secondary-bg)] text-[var(--text-main)] border border-[var(--border-subtle)]">
-              {t.badge}
-            </span>
+            
+            {/* Interactive Edition Badge / Switcher */}
+            <div className="flex items-center bg-[var(--bg-input)] p-0.5 rounded-lg border border-[var(--border-subtle)] text-[9px] font-black">
+              <button
+                type="button"
+                onClick={() => onToggleEdition('pro')}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded transition-all ${
+                  edition === 'pro'
+                    ? 'bg-gradient-to-r from-amber-500 to-pink-500 text-white shadow-sm font-black'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+                }`}
+                title="Active PRO Commercial Edition"
+              >
+                <Crown className="w-2.5 h-2.5" />
+                <span>PRO</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onToggleEdition('free')}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded transition-all ${
+                  edition === 'free'
+                    ? 'bg-emerald-500 text-white font-black shadow-sm'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+                }`}
+                title="Preview Community Free Edition"
+              >
+                <span>FREE</span>
+              </button>
+            </div>
+
             <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/30 flex items-center gap-1">
               <Heart className="w-2.5 h-2.5 fill-current" />
               Made By Lumichandesu
@@ -97,7 +128,7 @@ export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
           title="CPU Usage"
         >
           <Gauge className="w-3 h-3 text-amber-400" />
-          <span>CPU <b className="text-[var(--text-main)]">{telemetry.cpuPercent || 3}%</b></span>
+          <span>CPU <b className="text-[var(--text-main)]">{telemetry.cpuPercent || 15}%</b></span>
         </div>
 
         {/* RAM MB */}
@@ -106,18 +137,7 @@ export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
           title="Server RAM Memory"
         >
           <Cpu className="w-3 h-3 text-cyan-400" />
-          <span>RAM <b className="text-[var(--text-main)]">{telemetry.memoryMB || 96}M</b></span>
-        </div>
-
-        {/* GPU % & VRAM Usage */}
-        <div
-          className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-input)] text-[10px] font-mono text-[var(--text-muted)]"
-          title="GPU Hardware Acceleration Load & VRAM Usage"
-        >
-          <Activity className="w-3 h-3 text-purple-400" />
-          <span>GPU <b className="text-[var(--text-main)]">{telemetry.gpuPercent || 12}%</b></span>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <span>VRAM <b className="text-purple-300">{vramGb} GB</b></span>
+          <span>RAM <b className="text-[var(--text-main)]">{telemetry.memoryMB || 128}M</b></span>
         </div>
 
         {/* Trilingual UI Language Switcher */}
