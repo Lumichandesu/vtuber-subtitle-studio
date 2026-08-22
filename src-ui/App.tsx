@@ -42,11 +42,6 @@ export const App: React.FC = () => {
     if (savedLang && (savedLang === 'th' || savedLang === 'ja' || savedLang === 'en')) {
       setUiLang(savedLang);
     }
-
-    const savedEdition = localStorage.getItem('vtuber_edition') as AppEdition;
-    if (savedEdition === 'free' || savedEdition === 'pro') {
-      setEdition(savedEdition);
-    }
   }, []);
 
   const handleToggleTheme = () => {
@@ -63,12 +58,6 @@ export const App: React.FC = () => {
 
   const handleToggleEdition = (newEdition: AppEdition) => {
     setEdition(newEdition);
-    localStorage.setItem('vtuber_edition', newEdition);
-    if (newEdition === 'free') {
-      setSttMode('speed');
-      setStudioMicMode(false);
-      updateLanguage({ aiEngine: 'built-in' });
-    }
   };
 
   const {
@@ -164,7 +153,7 @@ export const App: React.FC = () => {
         onOpenProModal={() => setIsProModalOpen(true)}
       />
 
-      {/* Free Edition Notice Banner (When in Free Mode) */}
+      {/* Free Edition Notice Banner (ONLY in Free Edition, Never in Pro) */}
       {edition === 'free' && (
         <div className="bg-gradient-to-r from-pink-500/15 via-purple-500/15 to-cyan-500/15 border-b border-pink-500/30 px-4 py-2 flex items-center justify-between text-xs animate-fadeIn">
           <div className="flex items-center gap-2 text-[var(--text-main)]">
@@ -348,8 +337,8 @@ export const App: React.FC = () => {
         onUpdateGlossary={updateGlossary}
       />
 
-      {/* PRO Edition Features & Gumroad Showcase Modal */}
-      {isProModalOpen && (
+      {/* PRO Edition Features & Gumroad Showcase Modal (Shown ONLY when triggered in Free mode) */}
+      {isProModalOpen && edition === 'free' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
           <div className="bg-[var(--bg-surface)] border border-amber-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative">
             <div className="flex items-center justify-between">
@@ -408,22 +397,12 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-between gap-3">
-              <button
-                onClick={() => {
-                  handleToggleEdition(edition === 'pro' ? 'free' : 'pro');
-                  setIsProModalOpen(false);
-                }}
-                className="px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] text-xs font-bold text-[var(--text-main)] hover:bg-[var(--btn-secondary-bg)] transition-colors"
-              >
-                {edition === 'pro' ? (t.switchModeFree || '🔄 สลับไปโหมด Free') : (t.switchModeSimulation || '✨ สลับเป็นโหมด PRO จำลอง')}
-              </button>
-
+            <div className="pt-2 flex items-center justify-end gap-3">
               <a
                 href={GUMROAD_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-pink-500/25 hover:opacity-95 transition-opacity"
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-pink-500/25 hover:opacity-95 transition-opacity"
               >
                 <span>{t.buyOnGumroad || 'ซื้อเวอร์ชัน PRO บน Gumroad'}</span>
                 <ExternalLink className="w-3.5 h-3.5" />

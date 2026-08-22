@@ -36,7 +36,7 @@ export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
   onTestSubtitle,
   onOpenProModal,
 }) => {
-  const t = UI_TRANSLATIONS[uiLang];
+  const t = UI_TRANSLATIONS[uiLang] || UI_TRANSLATIONS.th;
   const isFast = liveLatencyMs <= 150;
   const isModerate = liveLatencyMs > 150 && liveLatencyMs <= 300;
 
@@ -60,34 +60,27 @@ export const MinimalAnimeHeader: React.FC<MinimalAnimeHeaderProps> = ({
               {t.appTitle}
             </h1>
             
-            {/* Interactive Edition Badge / Switcher */}
-            <div className="flex items-center bg-[var(--bg-input)] p-0.5 rounded-lg border border-[var(--border-subtle)] text-[9px] font-black">
-              <button
-                type="button"
-                onClick={() => onToggleEdition('pro')}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded transition-all ${
-                  edition === 'pro'
-                    ? 'bg-gradient-to-r from-amber-500 to-pink-500 text-white shadow-sm font-black'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                }`}
-                title="Active PRO Commercial Edition"
-              >
-                <Crown className="w-2.5 h-2.5" />
-                <span>PRO</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onToggleEdition('free')}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded transition-all ${
-                  edition === 'free'
-                    ? 'bg-emerald-500 text-white font-black shadow-sm'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                }`}
-                title="Preview Community Free Edition"
-              >
-                <span>FREE</span>
-              </button>
-            </div>
+            {/* Permanent PRO Badge (No Free toggle in PRO edition) */}
+            {edition === 'pro' ? (
+              <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 text-white font-black text-[10px] shadow-sm flex items-center gap-1 select-none">
+                <Crown className="w-3 h-3 fill-current" />
+                <span>PRO EDITION</span>
+              </span>
+            ) : (
+              <div className="flex items-center bg-[var(--bg-input)] p-0.5 rounded-lg border border-[var(--border-subtle)] text-[9px] font-black">
+                <span className="px-2 py-0.5 rounded bg-emerald-500 text-white font-black shadow-sm">
+                  FREE
+                </span>
+                <button
+                  type="button"
+                  onClick={onOpenProModal}
+                  className="flex items-center gap-1 px-2 py-0.5 text-amber-400 hover:text-amber-300 transition-colors"
+                >
+                  <Crown className="w-2.5 h-2.5" />
+                  <span>UPGRADE</span>
+                </button>
+              </div>
+            )}
 
             <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/30 flex items-center gap-1">
               <Heart className="w-2.5 h-2.5 fill-current" />
