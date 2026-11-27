@@ -1,88 +1,53 @@
-# 🌸 VTuber Real-Time OBS AI Subtitle & Live Translator (Community Edition)
+# VTuber Subtitle Studio: live subtitles and translation for OBS
 
 <p align="center">
-  <img src="src-ui/app-icon.png" width="120" height="120" alt="VTuber Subtitle Studio Icon" />
+  <img src="Home.png" alt="VTuber Subtitle Studio main screen: microphone test, language picker, subtitle style and OBS preview" width="100%">
 </p>
 
-<p align="center">
-  <b>Ultra Low-Latency (< 40ms) AI Subtitles & Live Simultaneous Translator for VTubers & Streamers</b><br>
-  <i>Supports Simultaneous Thai (TH) ✦ Japanese (JP) ✦ English (EN)</i>
-</p>
+VTuber Subtitle Studio turns your microphone into live subtitles on stream. It listens to what you say, writes it out, translates it, and shows both lines in OBS Studio through a transparent browser source. It was made for VTubers and streamers who talk in Thai, Japanese or English and want viewers in the other languages to follow along.
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/Bun-1.3+-black.svg" alt="Bun" />
-  <img src="https://img.shields.io/badge/React-19-cyan.svg" alt="React 19" />
-  <img src="https://img.shields.io/badge/OBS-Browser_Source_100%25-purple.svg" alt="OBS" />
-  <a href="https://github.com/Lumichandesu"><img src="https://img.shields.io/badge/Made%20With%20%E2%99%A5%20By-Lumichandesu-pink.svg" alt="Lumichandesu" /></a>
-</p>
+It runs on your own Windows PC and only listens on `127.0.0.1`, so nothing is exposed to your network.
 
----
+## What it does
 
-<p align="center">
-  <img src="Home.png" alt="VTuber Subtitle Studio Workspace Screenshot" style="max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
-</p>
+- Speech to text from your microphone, in Thai, Japanese or English.
+- Live translation between those three languages.
+- An OBS overlay at `/overlay` with a transparent background and no watermark.
+- Subtitle styling: font, size, colour, outline and glow, with a live preview before you go on air.
+- The app itself can be switched between Thai, Japanese and English.
 
----
+## Free and Pro editions
 
-## 🌟 Overview
+This repository is the free Community Edition under the MIT licence.
 
-**VTuber Subtitle Studio** is a standalone, ultra-low-latency real-time AI subtitle generator and live translator tailored specifically for VTubers and live streamers. It connects seamlessly to **OBS Studio** via a 100% transparent browser overlay with zero watermarks.
+The [Pro edition on Gumroad](https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio) adds:
 
----
+- translation into two languages at once (for example Thai to Japanese and English),
+- your own Gemini or OpenAI key for higher-quality translation,
+- export of the whole stream as `.srt` or `.vtt` subtitles for VODs and clips,
+- a glossary for names and slang that should not be translated,
+- hotkeys for phrases you use often,
+- a Windows `.exe` that runs without installing anything.
 
-## ✨ Free Community Edition Features
+## Run it from source
 
-- 🎙️ **Dual-Worker Ping-Pong STT Engine**: Continuous speech recognition that never stalls or freezes mid-stream.
-- ⚡ **Neural AI Translation (< 40ms)**: Fast, free neural translation with zero memory buffer locks.
-- 🌸 **Anime Font & Styling Studio**: Real-time customizable neon glow, stroke outlines, and Google Fonts.
-- 📺 **1-Click OBS Browser Source Overlay**: 100% transparent, zero watermarks, zero ghosting, and auto-fade.
-- 🛡️ **Hardened Loopback Security**: Binds strictly to `127.0.0.1` with active path traversal protections.
-- 🎌 **Full Trilingual UI Localization**: Instant 1-click switching between Thai (TH), Japanese (JP), and English (EN).
-
----
-
-## 👑 Want the PRO Version?
-
-Support **Lumichandesu** and get the **Full PRO Edition on Gumroad**:
-
-- 🌟 **Simultaneous Dual-Target Translation** (Speak Thai ➔ Output Japanese & English simultaneously on screen)
-- 🎯 **48kHz Studio Vocal DSP Mastering** (80Hz Highpass + 3.8kHz Presence EQ + Dynamic Compressor)
-- 🤖 **Custom AI Translation Models** (Connect your personal Google Gemini 2.5 Flash / GPT-4o-mini API keys)
-- 🎬 **VOD Subtitle Export (.SRT / .VTT)** (Export complete stream transcripts in 1 click for YouTube clips)
-- 📖 **Custom VTuber Slang & Glossary Dictionary**
-- 🎹 **Stream Soundboard Hotkeys** (1-Click trigger for common stream phrases)
-- 📦 **1-Click Standalone Windows `.EXE`** (Zero installation required)
-
-👉 **[Get VTuber Subtitle Studio PRO on Gumroad](https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio)** 💖
-
----
-
-## 🚀 Quick Start (Developers / Free Edition)
-
-### Prerequisites
-- [Bun](https://bun.sh) (v1.1+)
-- Windows 10 / 11
-
-### Installation & Run
+You need [Bun](https://bun.sh) 1.1 or newer on Windows 10 or 11.
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/Lumichandesu/vtuber-subtitle-studio.git
 cd vtuber-subtitle-studio
-
-# 2. Install dependencies
 bun install
-
-# 3. Start development mode
 bun run dev
 ```
 
-The app will open on `http://127.0.0.1:18890` with the OBS Overlay ready at `http://127.0.0.1:18890/overlay`.
+Open `http://127.0.0.1:18890` for the studio. In OBS, add a Browser Source pointing to `http://127.0.0.1:18890/overlay`. If port 18890 is taken, the app picks the next free port and prints it in the console.
 
----
+Speech recognition uses the browser's built-in Web Speech API, so open the studio in Chrome or Edge.
 
-## 📜 License
+## Built with
 
-This Community Edition is open-sourced under the [MIT License](LICENSE).  
-Created with love by [Lumichandesu](https://github.com/Lumichandesu) 💖
+Bun, Elysia, React 19, Vite and Tailwind CSS.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
