@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Globe, BookOpen, Cpu, Sparkles, Key, Zap, Crown } from 'lucide-react';
+import { BookOpen, Key, Zap, Sparkles, Bot } from 'lucide-react';
 import type { TranslationConfig } from '../../src-server/types/schema';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import type { AppEdition } from '../App';
+import { PanelHeader, ProChip } from './ui';
 
 interface LanguageMatrixProps {
   language: TranslationConfig;
@@ -13,6 +14,12 @@ interface LanguageMatrixProps {
   onOpenGlossary: () => void;
   onOpenProModal?: () => void;
 }
+
+const LANG_OPTIONS = [
+  { code: 'th', native: 'ภาษาไทย', tag: 'TH' },
+  { code: 'ja', native: '日本語', tag: 'JP' },
+  { code: 'en', native: 'English', tag: 'EN' },
+];
 
 export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
   language,
@@ -49,182 +56,139 @@ export const LanguageMatrix: React.FC<LanguageMatrixProps> = ({
     }
   };
 
+  const engines = [
+    { id: 'built-in', icon: Zap, name: t.engineBuiltInName, desc: t.engineBuiltInDesc, isPro: false },
+    { id: 'gemini', icon: Sparkles, name: t.engineGeminiName, desc: t.engineGeminiDesc, isPro: true },
+    { id: 'openai', icon: Bot, name: t.engineOpenaiName, desc: t.engineOpenaiDesc, isPro: true },
+  ];
+
   return (
-    <div className="glass-panel p-4 space-y-3.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-[var(--btn-secondary-bg)] text-[var(--text-main)]">
-            <Globe className="w-4 h-4" />
-          </div>
-          <div>
-            <h2 className="font-extrabold text-sm md:text-base text-[var(--text-main)] flex items-center gap-2">
-              {t.matrixTitle}
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 flex items-center gap-1">
-                <Zap className="w-3 h-3" /> &lt; 40ms Engine
-              </span>
-            </h2>
-            <p className="text-[11px] text-[var(--text-muted)]">
-              {t.matrixDesc}
-            </p>
+    <section className="panel space-y-4" aria-labelledby="lang-title">
+      <PanelHeader id="lang-title" step="2" tone="pink" title={t.matrixTitle} desc={t.matrixDesc}>
+        <button type="button" onClick={onOpenGlossary} className="btn btn-secondary">
+          <BookOpen className="w-4 h-4" aria-hidden="true" />
+          <span>{t.slangDictBtn}</span>
+          {edition === 'free' && <ProChip />}
+        </button>
+      </PanelHeader>
+
+      {/* Source / target languages */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+        <div className="space-y-1.5" role="group" aria-labelledby="src-lang-label">
+          <span id="src-lang-label" className="field-label block">{t.sourceLangLabel}</span>
+          <div className="grid grid-cols-3 gap-1.5">
+            {LANG_OPTIONS.map((lang) => (
+              <button
+                key={lang.code}
+                type="button"
+                lang={lang.code}
+                onClick={() => onChangeLanguage({ sourceLang: lang.code as any })}
+                aria-pressed={language.sourceLang === lang.code}
+                className="tile !px-1 !py-2 text-center"
+                title={lang.tag}
+              >
+                <span className="tile-title">{lang.native}</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        <button
-          onClick={onOpenGlossary}
-          className="btn-dark px-3 py-1.5 text-xs flex items-center gap-1.5"
-          title="Edit stream slang & keyword dictionary"
-        >
-          <BookOpen className="w-3.5 h-3.5 text-[var(--text-main)]" />
-          <span>{t.slangDictBtn}</span>
-          {edition === 'free' && (
-            <span className="px-1 py-0.2 rounded bg-amber-500/20 text-amber-400 font-bold text-[8px]">PRO</span>
-          )}
-        </button>
+        <div className="space-y-1.5" role="group" aria-labelledby="tgt-lang-label">
+          <div className="flex items-center justify-between gap-2">
+            <span id="tgt-lang-label" className="field-label">{t.targetLangLabel}</span>
+            {edition === 'free' && <span className="text-xs text-warn">{t.oneLangInFree}</span>}
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {LANG_OPTIONS.map((lang) => (
+              <button
+                key={lang.code}
+                type="button"
+                lang={lang.code}
+                onClick={() => toggleTargetLang(lang.code)}
+                aria-pressed={language.targetLangs.includes(lang.code)}
+                className="tile !px-1 !py-2 text-center"
+                title={lang.tag}
+              >
+                <span className="tile-title">{lang.native}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* AI Translation Engine Selector */}
-      <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-2">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-[var(--text-main)] flex items-center gap-1.5 text-[11px]">
-            <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+      {/* Translation engine */}
+      <div className="box space-y-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="box-title">
             {t.aiModelLabel}
+            <span className="chip chip-blue">{t.fastEngineChip}</span>
           </span>
           {edition === 'pro' && (
             <button
+              type="button"
               onClick={() => setShowApiKeyInput(!showApiKeyInput)}
-              className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] font-semibold flex items-center gap-1"
+              aria-expanded={showApiKeyInput}
+              className="btn btn-ghost btn-sm !min-h-[26px] !px-2"
             >
-              <Key className="w-3 h-3" />
-              {showApiKeyInput ? 'Hide API Keys' : 'Custom Cloud API Key (Optional)'}
+              <Key className="w-3.5 h-3.5" aria-hidden="true" />
+              {showApiKeyInput ? t.apiKeyHide : t.apiKeyShow}
             </button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
-          {[
-            { id: 'built-in', name: '⚡ Neural AI (Free & Ultra-Fast <40ms)', desc: 'Real-time multi-cloud cluster, 0ms cache', isPro: false },
-            { id: 'gemini', name: '✨ Google Gemini 2.5 Flash', desc: 'VTuber persona & nuanced stream translation', isPro: true },
-            { id: 'openai', name: '🤖 OpenAI GPT-4o-mini', desc: 'High-accuracy streaming LLM translation', isPro: true },
-          ].map((engine) => {
+        <div className="grid grid-cols-1 sm:grid-cols-3 2xl:grid-cols-1 gap-2">
+          {engines.map((engine) => {
+            const Icon = engine.icon;
             const isSelected = (edition === 'free' ? 'built-in' : language.aiEngine) === engine.id;
             return (
               <button
                 key={engine.id}
+                type="button"
                 onClick={() => handleSelectEngine(engine.id)}
-                className={`p-2 rounded-lg border text-left transition-all relative ${
-                  isSelected
-                    ? 'border-[var(--text-main)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black shadow-sm'
-                    : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--border-active)]'
-                }`}
+                aria-pressed={isSelected}
+                className="tile"
               >
-                {edition === 'free' && engine.isPro && (
-                  <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-black text-[9px] border border-amber-500/40 flex items-center gap-0.5">
-                    <Crown className="w-2.5 h-2.5" /> PRO
-                  </span>
-                )}
-                <div className="text-xs font-bold">{engine.name}</div>
-                <div className="text-[9px] opacity-75">{engine.desc}</div>
+                <div className="flex items-center gap-2">
+                  <span className="check-dot" aria-hidden="true" />
+                  <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
+                  <span className="tile-title truncate">{engine.name}</span>
+                  {edition === 'free' && engine.isPro && <ProChip className="ml-auto" />}
+                </div>
+                <p className="tile-desc pl-6">{engine.desc}</p>
               </button>
             );
           })}
         </div>
 
-        {/* Custom API Key Fields (Pro only) */}
         {edition === 'pro' && showApiKeyInput && (
-          <div className="pt-2 border-t border-[var(--border-subtle)] grid grid-cols-1 sm:grid-cols-2 gap-2 animate-fadeIn">
-            <div>
-              <label className="text-[10px] text-[var(--text-muted)] block font-semibold mb-0.5">
-                Google Gemini API Key (Optional)
-              </label>
+          <div className="pt-2.5 border-t border-line grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fadeIn">
+            <div className="space-y-1">
+              <label htmlFor="gemini-key" className="field-label block">{t.geminiKeyLabel}</label>
               <input
+                id="gemini-key"
                 type="password"
+                autoComplete="off"
                 placeholder="AIzaSy..."
                 value={language.geminiApiKey || ''}
                 onChange={(e) => onChangeLanguage({ geminiApiKey: e.target.value })}
-                className="w-full text-xs rounded-lg px-2.5 py-1 font-mono"
+                className="field font-mono"
               />
             </div>
-            <div>
-              <label className="text-[10px] text-[var(--text-muted)] block font-semibold mb-0.5">
-                OpenAI API Key (Optional)
-              </label>
+            <div className="space-y-1">
+              <label htmlFor="openai-key" className="field-label block">{t.openaiKeyLabel}</label>
               <input
+                id="openai-key"
                 type="password"
+                autoComplete="off"
                 placeholder="sk-..."
                 value={language.openaiApiKey || ''}
                 onChange={(e) => onChangeLanguage({ openaiApiKey: e.target.value })}
-                className="w-full text-xs rounded-lg px-2.5 py-1 font-mono"
+                className="field font-mono"
               />
             </div>
           </div>
         )}
       </div>
-
-      {/* Language Matrix Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Source Language */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-[var(--text-main)]">
-            {t.sourceLangLabel}
-          </label>
-          <div className="grid grid-cols-3 gap-1.5">
-            {[
-              { code: 'ja', label: '日本語 (JP)' },
-              { code: 'th', label: 'ภาษาไทย (TH)' },
-              { code: 'en', label: 'English (EN)' },
-            ].map((lang) => {
-              const isSelected = language.sourceLang === lang.code;
-              return (
-                <button
-                  key={lang.code}
-                  onClick={() => onChangeLanguage({ sourceLang: lang.code as any })}
-                  className={`p-2 rounded-lg border text-xs font-bold transition-all ${
-                    isSelected
-                      ? 'border-[var(--text-main)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black'
-                      : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:border-[var(--border-active)] hover:text-[var(--text-main)]'
-                  }`}
-                >
-                  {lang.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Target Languages */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-[var(--text-main)] flex items-center justify-between">
-            <span>{t.targetLangLabel}</span>
-            {edition === 'free' && (
-              <span className="text-[9px] text-amber-400 font-semibold flex items-center gap-0.5">
-                <Crown className="w-2.5 h-2.5" /> 1 ภาษาในโหมด Free
-              </span>
-            )}
-          </label>
-          <div className="grid grid-cols-3 gap-1.5">
-            {[
-              { code: 'th', label: 'ภาษาไทย (TH)' },
-              { code: 'ja', label: '日本語 (JP)' },
-              { code: 'en', label: 'English (EN)' },
-            ].map((lang) => {
-              const isSelected = language.targetLangs.includes(lang.code);
-              return (
-                <button
-                  key={lang.code}
-                  onClick={() => toggleTargetLang(lang.code)}
-                  className={`p-2 rounded-lg border text-xs font-bold transition-all ${
-                    isSelected
-                      ? 'border-[var(--text-main)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black'
-                      : 'border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:border-[var(--border-active)] hover:text-[var(--text-main)]'
-                  }`}
-                >
-                  {lang.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 };

@@ -12,14 +12,17 @@ import { ObsDeployModal } from './components/ObsDeployModal';
 import { GlossaryModal } from './components/GlossaryModal';
 import type { UILang } from './i18n/translations';
 import { UI_TRANSLATIONS } from './i18n/translations';
-import { Heart, Crown, Sparkles, ExternalLink } from 'lucide-react';
+import { Heart, Crown, Sparkles, ExternalLink, X, Languages, AudioLines, FileDown, BookOpen } from 'lucide-react';
 
 export type AppEdition = 'pro' | 'free';
 
 export const GUMROAD_URL = 'https://lumichandesu.gumroad.com/l/VTuber-Subtitle-Studio';
 
+const isUILang = (v: unknown): v is UILang => v === 'th' || v === 'ja' || v === 'en';
+const HTML_LANG: Record<UILang, string> = { th: 'th', ja: 'ja', en: 'en' };
+
 export const App: React.FC = () => {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [uiLang, setUiLang] = useState<UILang>('th');
   const defaultEdition: AppEdition = (import.meta.env.VITE_APP_EDITION as AppEdition) || 'pro';
   const [edition, setEdition] = useState<AppEdition>(defaultEdition);
@@ -31,19 +34,24 @@ export const App: React.FC = () => {
   const hasAutoStartedRef = useRef(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('vtuber_theme') as 'dark' | 'light';
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.className = savedTheme;
-    } else {
-      document.documentElement.className = 'dark';
-    }
+    // ?theme= and ?lang= let the launcher (or a screenshot run) pick a start state.
+    const params = new URLSearchParams(window.location.search);
+    const qsTheme = params.get('theme');
+    const savedTheme = (qsTheme === 'dark' || qsTheme === 'light' ? qsTheme : localStorage.getItem('vtuber_theme')) as 'dark' | 'light' | null;
+    const nextTheme = savedTheme === 'dark' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    document.documentElement.className = nextTheme;
 
-    const savedLang = localStorage.getItem('vtuber_ui_lang') as UILang;
-    if (savedLang && (savedLang === 'th' || savedLang === 'ja' || savedLang === 'en')) {
+    const qsLang = params.get('lang');
+    const savedLang = isUILang(qsLang) ? qsLang : localStorage.getItem('vtuber_ui_lang');
+    if (isUILang(savedLang)) {
       setUiLang(savedLang);
     }
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = HTML_LANG[uiLang];
+  }, [uiLang]);
 
   const handleToggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -133,11 +141,27 @@ export const App: React.FC = () => {
     updateLanguage(newLang);
   };
 
+  const showProModal = isProModalOpen && edition === 'free';
+  useEffect(() => {
+    if (!showProModal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsProModalOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showProModal]);
+
   const t = UI_TRANSLATIONS[uiLang] || UI_TRANSLATIONS.th;
 
+  const proFeatures = [
+    { icon: Languages, tone: 'bg-yblue', title: t.proFeature1Title, desc: t.proFeature1Desc },
+    { icon: AudioLines, tone: 'bg-ypink', title: t.proFeature2Title, desc: t.proFeature2Desc },
+    { icon: FileDown, tone: 'bg-ysand', title: t.proFeature3Title, desc: t.proFeature3Desc },
+    { icon: BookOpen, tone: 'bg-ymint', title: t.proFeature4Title, desc: t.proFeature4Desc },
+  ];
+
   return (
-    <div className={`min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex flex-col font-sans select-none ${theme}`}>
-      {/* Top Header with live ms, CPU %, RAM MB, GPU %, Made By Lumichandesu, UI Language Switcher, Theme Switcher & DEPLOY Button */}
+    <div className="min-h-screen bg-paper text-ink flex flex-col font-sans">
       <MinimalAnimeHeader
         isConnected={isConnected}
         activePort={activePort}
@@ -154,98 +178,91 @@ export const App: React.FC = () => {
         onOpenProModal={() => setIsProModalOpen(true)}
       />
 
-      {/* Free Edition Notice Banner (ONLY in Free Edition, Never in Pro) */}
+      {/* Free edition notice (never shown in PRO) */}
       {edition === 'free' && (
-        <div className="bg-gradient-to-r from-pink-500/15 via-purple-500/15 to-cyan-500/15 border-b border-pink-500/30 px-4 py-2 flex items-center justify-between text-xs animate-fadeIn">
-          <div className="flex items-center gap-2 text-[var(--text-main)]">
-            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-black text-[10px] border border-emerald-500/30">
-              FREE COMMUNITY EDITION
-            </span>
-            <span className="font-semibold text-[11px]">
-              {t.freeEditionBanner || 'กำลังใช้งานเวอร์ชันฟรี (Neural AI ฟรี, ถอดรหัสคำพูดความเร็วสูง)'}
-            </span>
+        <div className="border-b border-line bg-ysand-soft">
+          <div className="max-w-[1880px] mx-auto px-4 lg:px-6 py-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm text-ink min-w-0">
+              <span className="chip chip-free">{t.freeEditionLabel}</span>
+              <span className="truncate">{t.freeEditionBanner}</span>
+            </div>
+            <button type="button" onClick={() => setIsProModalOpen(true)} className="btn btn-secondary btn-sm">
+              <Crown className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>{t.viewProGumroad}</span>
+            </button>
           </div>
-          <button
-            onClick={() => setIsProModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-pink-500 text-white font-black text-[11px] shadow-sm hover:opacity-90 transition-opacity"
-          >
-            <Crown className="w-3.5 h-3.5" />
-            <span>{t.viewProGumroad || 'ดูฟีเจอร์ PRO & ลิงก์ Gumroad'}</span>
-          </button>
         </div>
       )}
 
-      {/* Main Studio 4-Step Workspace */}
-      <div className="flex-1 p-3 md:p-5 space-y-4 max-w-[1700px] w-full mx-auto pb-16">
-        <main className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          {/* Left Column (7 cols): Step 1 & Step 2 */}
-          <div className="lg:col-span-7 space-y-4">
-            {/* Step 1: [1. ไมค์ & เทสต์เสียง] */}
-            <MicTestStudio
-              isRecording={isRecording}
-              devices={devices}
-              selectedDeviceId={selectedDeviceId}
-              onSelectDevice={setSelectedDeviceId}
-              volumeLevel={volumeLevel}
-              isSpeaking={isSpeaking}
-              vadThreshold={0.010}
-              liveLatencyMs={liveLatencyMs}
-              uiLang={uiLang}
-              edition={edition}
-              sttMode={edition === 'free' ? 'speed' : sttMode}
-              studioMicMode={edition === 'pro' ? studioMicMode : false}
-              onChangeSttMode={(m) => {
-                if (edition === 'free' && m === 'quality') {
-                  setIsProModalOpen(true);
-                  return;
-                }
-                setSttMode(m);
-              }}
-              onChangeStudioMicMode={(val) => {
-                if (edition === 'free' && val) {
-                  setIsProModalOpen(true);
-                  return;
-                }
-                setStudioMicMode(val);
-              }}
-              onChangeVadThreshold={(val) => {}}
-              onStart={startRecording}
-              onStop={handleStopMic}
-              onRefreshDevices={refreshDevices}
-              onOpenProModal={() => setIsProModalOpen(true)}
-              latestSubtitle={latestSubtitle}
-              sourceLang={language.sourceLang}
-            />
+      {/* Workspace: 2 columns on laptops, 3 columns on 1080p and wider */}
+      <div className="flex-1 w-full max-w-[1880px] mx-auto px-4 lg:px-6 pt-5 pb-20">
+        <main className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div className="lg:col-span-7 2xl:contents space-y-5 2xl:space-y-0">
+            <div className="2xl:col-span-4 space-y-5">
+              <MicTestStudio
+                isRecording={isRecording}
+                devices={devices}
+                selectedDeviceId={selectedDeviceId}
+                onSelectDevice={setSelectedDeviceId}
+                volumeLevel={volumeLevel}
+                isSpeaking={isSpeaking}
+                vadThreshold={0.010}
+                liveLatencyMs={liveLatencyMs}
+                uiLang={uiLang}
+                edition={edition}
+                sttMode={edition === 'free' ? 'speed' : sttMode}
+                studioMicMode={edition === 'pro' ? studioMicMode : false}
+                onChangeSttMode={(m) => {
+                  if (edition === 'free' && m === 'quality') {
+                    setIsProModalOpen(true);
+                    return;
+                  }
+                  setSttMode(m);
+                }}
+                onChangeStudioMicMode={(val) => {
+                  if (edition === 'free' && val) {
+                    setIsProModalOpen(true);
+                    return;
+                  }
+                  setStudioMicMode(val);
+                }}
+                onChangeVadThreshold={() => {}}
+                onStart={startRecording}
+                onStop={handleStopMic}
+                onRefreshDevices={refreshDevices}
+                onOpenProModal={() => setIsProModalOpen(true)}
+                latestSubtitle={latestSubtitle}
+                sourceLang={language.sourceLang}
+              />
 
-            {/* Language Matrix & Real-time AI Translation */}
-            <LanguageMatrix
-              language={language}
-              uiLang={uiLang}
-              edition={edition}
-              onChangeLanguage={handleLanguageChange}
-              onOpenGlossary={() => {
-                if (edition === 'free') {
-                  setIsProModalOpen(true);
-                  return;
-                }
-                setIsGlossaryOpen(true);
-              }}
-              onOpenProModal={() => setIsProModalOpen(true)}
-            />
+              <LanguageMatrix
+                language={language}
+                uiLang={uiLang}
+                edition={edition}
+                onChangeLanguage={handleLanguageChange}
+                onOpenGlossary={() => {
+                  if (edition === 'free') {
+                    setIsProModalOpen(true);
+                    return;
+                  }
+                  setIsGlossaryOpen(true);
+                }}
+                onOpenProModal={() => setIsProModalOpen(true)}
+              />
+            </div>
 
-            {/* Step 2: [2. เลือกฟอนต์ & ปรับแต่ง] */}
-            <AnimeFontCustomizer
-              style={style}
-              presets={presets}
-              uiLang={uiLang}
-              onChangeStyle={updateStyle}
-              onApplyPreset={applyPreset}
-            />
+            <div className="2xl:col-span-4">
+              <AnimeFontCustomizer
+                style={style}
+                presets={presets}
+                uiLang={uiLang}
+                onChangeStyle={updateStyle}
+                onApplyPreset={applyPreset}
+              />
+            </div>
           </div>
 
-          {/* Right Column (5 cols): Step 3 & Soundboard & Subtitle History */}
-          <div className="lg:col-span-5 space-y-4 flex flex-col">
-            {/* Step 3: [3. ดูผลลัพธ์สด] */}
+          <div className="lg:col-span-5 2xl:col-span-4 space-y-5">
             <LiveResultBox
               style={style}
               latestSubtitle={latestSubtitle}
@@ -254,9 +271,9 @@ export const App: React.FC = () => {
               onClear={clearSubtitles}
             />
 
-            {/* Soundboard Quick Phrases */}
             <SoundboardHotkeys
               uiLang={uiLang}
+              edition={edition}
               onTriggerPhrase={(text) => {
                 if (edition === 'free') {
                   setIsProModalOpen(true);
@@ -266,10 +283,10 @@ export const App: React.FC = () => {
               }}
             />
 
-            {/* Subtitle History Timeline with SRT / VTT Export */}
             <SubtitleHistoryPanel
               history={subtitleHistory}
               uiLang={uiLang}
+              edition={edition}
               onClear={clearSubtitles}
               onExportSRT={() => {
                 if (edition === 'free') {
@@ -290,38 +307,45 @@ export const App: React.FC = () => {
         </main>
       </div>
 
-      {/* Bottom Status Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-surface)] border-t border-[var(--border-subtle)] px-4 py-2 flex flex-wrap items-center justify-between text-[11px] text-[var(--text-muted)] transition-colors">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
-            <span>{isConnected ? `${t.sidecarActive}` : 'Connecting...'}</span>
+      {/* Status bar */}
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-line">
+        <div className="max-w-[1880px] mx-auto px-4 lg:px-6 h-10 flex items-center justify-between gap-4 text-xs text-muted">
+          <div className="flex items-center gap-4 min-w-0 tabular-nums">
+            <span className="flex items-center gap-1.5 text-ink font-medium" role="status">
+              <span className={`dot ${isConnected ? 'bg-[#3FA673]' : 'bg-ysand'}`} aria-hidden="true" />
+              {isConnected ? t.sidecarActive : t.connecting}
+            </span>
+            <span className="hidden md:inline">
+              {t.editionLabel}: <b className="text-ink font-semibold">{edition === 'pro' ? t.proEditionLabel : t.freeEditionLabel}</b>
+            </span>
+            <span className="hidden md:inline">
+              {t.latency}: <b className="text-ink font-semibold">{liveLatencyMs} ms</b>
+            </span>
+            <span className="hidden lg:inline">
+              CPU: <b className="text-ink font-semibold">{telemetry.cpuPercent || 15}%</b>
+            </span>
+            <span className="hidden lg:inline">
+              {t.ramUsage}: <b className="text-ink font-semibold">{telemetry.memoryMB || 128} MB</b>
+            </span>
           </div>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <span>Edition: <b className={`uppercase font-bold ${edition === 'pro' ? 'text-amber-400' : 'text-emerald-400'}`}>{edition}</b></span>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <span>{t.latency}: <b className="text-emerald-400 font-mono font-bold">{liveLatencyMs} ms</b></span>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <span>CPU: <b className="text-amber-400 font-mono font-bold">{telemetry.cpuPercent || 15}%</b></span>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <span>{t.ramUsage}: <b className="text-cyan-400 font-mono font-bold">{telemetry.memoryMB || 128} MB</b></span>
-        </div>
 
-        <div className="flex items-center gap-4">
-          <div className="text-pink-400 font-bold flex items-center gap-1">
-            <Heart className="w-3 h-3 fill-current" />
-            <span>Made By Lumichandesu</span>
+          <div className="flex items-center gap-4 min-w-0">
+            <span className="hidden sm:flex items-center gap-1 text-ink">
+              <Heart className="w-3 h-3 fill-[#F8B7CC] text-[#D97C9C]" aria-hidden="true" />
+              <span>Made by Lumichandesu</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsDeployModalOpen(true)}
+              className="font-mono text-ink hover:underline underline-offset-2 truncate"
+              title={t.step4Btn}
+            >
+              127.0.0.1:{activePort}/overlay
+            </button>
           </div>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <button
-            onClick={() => setIsDeployModalOpen(true)}
-            className="text-[var(--text-main)] font-bold hover:underline"
-          >
-            OBS Overlay: http://127.0.0.1:{activePort}/overlay
-          </button>
         </div>
       </footer>
 
-      {/* Step 4 Modal: [4. 🚀 DEPLOY TO OBS] */}
       <ObsDeployModal
         isOpen={isDeployModalOpen}
         activePort={activePort}
@@ -329,7 +353,6 @@ export const App: React.FC = () => {
         onClose={() => setIsDeployModalOpen(false)}
       />
 
-      {/* Custom Slang Glossary Modal */}
       <GlossaryModal
         isOpen={isGlossaryOpen}
         glossary={glossary}
@@ -338,77 +361,60 @@ export const App: React.FC = () => {
         onUpdateGlossary={updateGlossary}
       />
 
-      {/* PRO Edition Features & Gumroad Showcase Modal (Shown ONLY when triggered in Free mode) */}
-      {isProModalOpen && edition === 'free' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[var(--bg-surface)] border border-amber-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
-                  <Crown className="w-6 h-6" />
+      {/* PRO features and Gumroad link (only reachable in the FREE edition) */}
+      {showProModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--scrim)] animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsProModalOpen(false);
+          }}
+        >
+          <div role="dialog" aria-modal="true" aria-labelledby="pro-modal-title" className="modal-card max-w-lg w-full p-6 space-y-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="step-badge step-sand">
+                  <Crown className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-[var(--text-main)]">
-                    {t.proModalTitle || 'VTuber Subtitle Studio PRO'}
-                  </h3>
-                  <p className="text-xs text-amber-400 font-semibold">
-                    {t.proModalSubtitle || 'ปลดล็อกทุกฟีเจอร์ระดับมืออาชีพสำหรับสตรีมเมอร์ & VTuber'}
-                  </p>
+                  <h2 id="pro-modal-title" className="panel-title">{t.proModalTitle}</h2>
+                  <p className="panel-desc">{t.proModalSubtitle}</p>
                 </div>
               </div>
               <button
+                type="button"
+                autoFocus
                 onClick={() => setIsProModalOpen(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--text-main)] text-sm font-bold"
+                className="btn btn-ghost btn-icon"
+                aria-label={t.closeBtn}
               >
-                ✕
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
-              <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature1Title || 'Simultaneous Dual Translation:'}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature1Desc || 'พูด 1 ประโยค แปลและแสดงผลออกทั้ง ญี่ปุ่น [JP] + อังกฤษ [EN] พร้อมกันบน OBS'}</p>
-                </div>
-              </div>
+            <ul className="space-y-2">
+              {proFeatures.map(({ icon: Icon, tone, title, desc }) => (
+                <li key={title} className="flex items-start gap-3">
+                  <span className={`mt-0.5 w-8 h-8 rounded-xl border border-[#231F20] flex items-center justify-center text-[#231F20] shrink-0 ${tone}`}>
+                    <Icon className="w-4 h-4" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-ink">{title}</p>
+                    <p className="text-sm text-muted">{desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-              <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature2Title || '48kHz Studio Vocal DSP Mastering:'}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature2Desc || 'ตัดเสียงลมกระแทก (80Hz) + บูสต์ความถี่พยัญชนะ (3.8kHz EQ) + Leveler ไมค์ดูดเสียงชัดเจน'}</p>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
-                <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature3Title || 'VOD Subtitle Export (.SRT / .VTT):'}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature3Desc || 'บันทึกไทม์ไลน์คำพูดตลอดทั้งสตรีม กดส่งออกไฟล์ซับไปตัดต่อคลิปไฮไลต์ลง YouTube ได้ทันที'}</p>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <b className="text-[var(--text-main)]">{t.proFeature4Title || 'VTuber Slang Dictionary & Soundboard:'}</b>
-                  <p className="text-[var(--text-muted)]">{t.proFeature4Desc || 'กำหนดคำศัพท์เฉพาะช่อง และปุ่มลัดยิงคำแปลขึ้นจอสดๆ ได้ในคลิกเดียว'}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2 flex items-center justify-end gap-3">
-              <a
-                href={GUMROAD_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-pink-500/25 hover:opacity-95 transition-opacity"
-              >
-                <span>{t.buyOnGumroad || 'ซื้อเวอร์ชัน PRO บน Gumroad'}</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
+            <a
+              href={GUMROAD_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-primary w-full min-h-[44px] text-sm"
+            >
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
+              <span>{t.buyOnGumroad}</span>
+              <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+            </a>
           </div>
         </div>
       )}

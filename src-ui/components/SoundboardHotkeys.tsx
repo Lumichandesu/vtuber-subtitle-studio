@@ -1,10 +1,13 @@
 import React from 'react';
-import { Volume2 } from 'lucide-react';
+import { Megaphone } from 'lucide-react';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
+import type { AppEdition } from '../App';
+import { ProChip } from './ui';
 
 interface SoundboardHotkeysProps {
   uiLang: UILang;
+  edition?: AppEdition;
   onTriggerPhrase: (text: string) => void;
 }
 
@@ -30,22 +33,20 @@ const QUICK_PHRASES: QuickPhrase[] = [
 
 export const SoundboardHotkeys: React.FC<SoundboardHotkeysProps> = ({
   uiLang,
+  edition = 'pro',
   onTriggerPhrase,
 }) => {
   const t = UI_TRANSLATIONS[uiLang] || UI_TRANSLATIONS.th;
 
   return (
-    <div className="glass-panel p-3.5 space-y-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded bg-[var(--btn-secondary-bg)] text-[var(--text-main)]">
-            <Volume2 className="w-3.5 h-3.5" />
-          </div>
-          <h3 className="font-extrabold text-xs text-[var(--text-main)]">
-            {t.soundboardTitle}
-          </h3>
+    <section className="panel space-y-3" aria-labelledby="phrases-title">
+      <div className="panel-head">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Megaphone className="w-4 h-4 shrink-0" aria-hidden="true" />
+          <h2 id="phrases-title" className="text-[0.9375rem] font-semibold text-ink">{t.soundboardTitle}</h2>
+          {edition === 'free' && <ProChip />}
         </div>
-        <span className="text-[10px] text-[var(--text-muted)]">{t.soundboardSub}</span>
+        <span className="hint text-right">{t.soundboardSub}</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -56,19 +57,16 @@ export const SoundboardHotkeys: React.FC<SoundboardHotkeysProps> = ({
           return (
             <button
               key={idx}
+              type="button"
               onClick={() => onTriggerPhrase(phrase.jp)}
-              className="p-2 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-active)] hover:bg-[var(--btn-primary-bg)] hover:text-[var(--btn-primary-text)] text-left transition-all group"
+              className="tile !px-2.5 !py-2 min-w-0"
             >
-              <div className="text-[11px] font-black text-[var(--text-main)] group-hover:text-[var(--btn-primary-text)] truncate">
-                {displayTitle}
-              </div>
-              <div className="text-[9px] text-[var(--text-muted)] group-hover:text-[var(--btn-primary-text)]/80 truncate">
-                {displaySub}
-              </div>
+              <span className="tile-title block truncate">{displayTitle}</span>
+              <span className="tile-desc block truncate">{displaySub}</span>
             </button>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Tv, Monitor, Trash2, Send } from 'lucide-react';
+import { Monitor, Eraser, Send } from 'lucide-react';
 import type { StyleConfig, SubtitlePayload } from '../../src-server/types/schema';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
+import { PanelHeader } from './ui';
 
 interface LiveResultBoxProps {
   style: StyleConfig;
@@ -13,6 +14,37 @@ interface LiveResultBoxProps {
 }
 
 type BgMode = 'transparent' | 'dark' | 'green' | 'webcam';
+
+const QUICK_SAMPLES: Record<UILang, { label: string; text: string }[]> = {
+  ja: [
+    { label: 'こんにちは', text: '皆さんこんにちは！今日も楽しくゲーム配信していきましょう！' },
+    { label: 'ありがとう', text: 'みんな配信に来て応援してくれて本当にありがとう！' },
+    { label: '勝った！', text: 'やったー！見事な大勝利です！GG！' },
+    { label: '草ｗｗｗ', text: '草ｗｗｗ 面白すぎてお腹痛い' },
+  ],
+  en: [
+    { label: 'Hello everyone', text: "Hello everyone! Welcome to today's livestream, let's have fun!" },
+    { label: 'Thank you', text: 'Thank you so much everyone for tuning in and supporting today!' },
+    { label: 'We won!', text: 'Yay! We won! What a magnificent victory! GG!' },
+    { label: 'LOL', text: "LOL so hilarious, can't stop laughing!" },
+  ],
+  th: [
+    { label: 'สวัสดีทุกคน', text: 'สวัสดีค่าทุกคน! วันนี้มาเล่นเกมกันอย่างสนุกสนานเลยนะ' },
+    { label: 'ขอบคุณมากๆ', text: 'ขอบคุณทุกคนมากๆ เลยนะที่แวะมาให้กำลังใจในวันนี้!' },
+    { label: 'ชนะแล้ว!', text: 'เย้! ชนะแล้ววว ยอดเยี่ยมมากทุกคน GG!' },
+    { label: '55555+', text: '55555+ ขำมากไม่ไหวแล้ว' },
+  ],
+};
+
+const CANVAS_BG: Record<BgMode, string> = {
+  dark: 'bg-[#121014]',
+  green: 'bg-[#00b140]',
+  webcam: 'bg-[linear-gradient(135deg,#2A3B55_0%,#4A3550_55%,#6B4E3D_100%)]',
+  transparent:
+    'bg-[#1c1c1c] bg-[linear-gradient(45deg,#2a2a2a_25%,transparent_25%,transparent_75%,#2a2a2a_75%),linear-gradient(45deg,#2a2a2a_25%,transparent_25%,transparent_75%,#2a2a2a_75%)] [background-size:20px_20px] [background-position:0_0,10px_10px]',
+};
+
+const outline = (w: number, c: string) => `-${w}px -${w}px 0 ${c}, ${w}px -${w}px 0 ${c}, -${w}px ${w}px 0 ${c}, ${w}px ${w}px 0 ${c}`;
 
 export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
   style,
@@ -48,224 +80,128 @@ export const LiveResultBox: React.FC<LiveResultBoxProps> = ({
 
   const ow = style.outlineWidth;
   const oc = style.outlineColor;
-  const gc = style.glowColor;
-  const gb = style.glowBlur;
+  const mainShadow = `${outline(ow, oc)}, 0 0 ${style.glowBlur}px ${style.glowColor}`;
+  const justify = style.alignment === 'left' ? 'flex-start' : style.alignment === 'right' ? 'flex-end' : 'center';
 
-  const mainShadow = `
-    -${ow}px -${ow}px 0 ${oc},
-     ${ow}px -${ow}px 0 ${oc},
-    -${ow}px  ${ow}px 0 ${oc},
-     ${ow}px  ${ow}px 0 ${oc},
-     0 0 ${gb}px ${gc}
-  `;
-
-  const quickSamples = uiLang === 'ja'
-    ? [
-        { label: '🌸 こんにちは', text: '皆さんこんにちは！今日も楽しくゲーム配信していきましょう！' },
-        { label: '🙏 ありがとう', text: 'みんな配信に来て応援してくれて本当にありがとう！' },
-        { label: '🎉 勝った！', text: 'やったー！見事な大勝利です！GG！' },
-        { label: '🤣 草ｗｗｗ', text: '草ｗｗｗ 面白すぎてお腹痛い' },
-      ]
-    : uiLang === 'en'
-    ? [
-        { label: '🌸 Hello Everyone', text: 'Hello everyone! Welcome to today\'s livestream, let\'s have fun!' },
-        { label: '🙏 Thank You', text: 'Thank you so much everyone for tuning in and supporting today!' },
-        { label: '🎉 We Won!', text: 'Yay! We won! What a magnificent victory! GG!' },
-        { label: '🤣 LOL Haha', text: 'LOL so hilarious, can\'t stop laughing!' },
-      ]
-    : [
-        { label: '🌸 สวัสดีทุกคน', text: 'สวัสดีค่าทุกคน! วันนี้มาเล่นเกมกันอย่างสนุกสนานเลยนะ' },
-        { label: '🙏 ขอบคุณมากๆ', text: 'ขอบคุณทุกคนมากๆ เลยนะที่แวะมาให้กำลังใจในวันนี้!' },
-        { label: '🎉 ชนะแล้ว!', text: 'เย้! ชนะแล้ววว ยอดเยี่ยมมากทุกคน GG!' },
-        { label: '🤣 55555+ (ขำ)', text: '55555+ ขำมากไม่ไหวแล้ว' },
-      ];
+  const bgModes: { id: BgMode; label: string }[] = [
+    { id: 'dark', label: t.bgDark },
+    { id: 'green', label: t.bgGreen },
+    { id: 'transparent', label: t.bgGrid },
+    { id: 'webcam', label: t.bgStreamer },
+  ];
 
   return (
-    <div className="glass-panel p-4 space-y-3.5 flex flex-col">
-      {/* 1. Step Header & Background Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-[var(--btn-secondary-bg)] text-[var(--text-main)]">
-            <Tv className="w-4 h-4" />
-          </div>
-          <div>
-            <h2 className="font-extrabold text-sm md:text-base text-[var(--text-main)]">
-              {t.step3Title}
-            </h2>
-            <p className="text-[11px] text-[var(--text-muted)]">
-              {t.step3Desc}
-            </p>
+    <section className="panel space-y-4" aria-labelledby="preview-title">
+      <PanelHeader id="preview-title" step="4" tone="mint" title={t.step3Title} desc={t.step3Desc}>
+        <button type="button" onClick={onClear} className="btn btn-secondary btn-icon" title={t.clearBtn} aria-label={t.clearBtn}>
+          <Eraser className="w-4 h-4" aria-hidden="true" />
+        </button>
+      </PanelHeader>
+
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="field-label" id="bg-label">{t.previewBgLabel}</span>
+          <div className="seg" role="group" aria-labelledby="bg-label">
+            {bgModes.map((m) => (
+              <button key={m.id} type="button" onClick={() => setBgMode(m.id)} aria-pressed={bgMode === m.id} className="seg-btn">
+                {m.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Background Toggles & Clear */}
-        <div className="flex items-center gap-1.5">
-          <div className="bg-[var(--bg-input)] p-1 rounded-lg border border-[var(--border-subtle)] flex items-center gap-0.5 text-xs">
-            <button
-              onClick={() => setBgMode('dark')}
-              className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
-                bgMode === 'dark' ? 'bg-[var(--text-main)] text-[var(--bg-main)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              Dark
-            </button>
-            <button
-              onClick={() => setBgMode('green')}
-              className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
-                bgMode === 'green' ? 'bg-emerald-600 text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              Green
-            </button>
-            <button
-              onClick={() => setBgMode('transparent')}
-              className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
-                bgMode === 'transparent' ? 'bg-[var(--text-main)] text-[var(--bg-main)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              Grid
-            </button>
-            <button
-              onClick={() => setBgMode('webcam')}
-              className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
-                bgMode === 'webcam' ? 'bg-[var(--text-main)] text-[var(--bg-main)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              Streamer
-            </button>
-          </div>
-
-          <button
-            onClick={onClear}
-            className="p-1.5 rounded-lg bg-[var(--btn-secondary-bg)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-rose-400 transition-all"
-            title={t.clearBtn}
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Preview Viewport Canvas */}
-      <div
-        className={`min-h-[380px] rounded-xl border border-[var(--border-subtle)] relative overflow-hidden flex flex-col justify-end p-6 md:p-8 transition-all shadow-inner ${
-          bgMode === 'dark'
-            ? 'bg-[#050505]'
-            : bgMode === 'green'
-            ? 'bg-[#00b140]'
-            : bgMode === 'webcam'
-            ? 'bg-gradient-to-tr from-[#111111] via-[#0a0a0a] to-[#1c1c1c]'
-            : 'bg-[radial-gradient(#333333_1px,transparent_1px)] [background-size:16px_16px] bg-[#000000]'
-        }`}
-        style={{
-          alignItems: style.alignment === 'left' ? 'flex-start' : style.alignment === 'right' ? 'flex-end' : 'center',
-          fontFamily: `"${style.fontFamily}", 'Prompt', 'Outfit', sans-serif`,
-        }}
-      >
-        <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/80 text-[10px] font-mono text-[#8e8e93] backdrop-blur-md pointer-events-none border border-white/10">
-          <Monitor className="w-3.5 h-3.5 text-white" />
-          <span>OBS CANVAS (1920x1080)</span>
-        </div>
-
-        {/* Subtitle Card */}
+        {/* OBS canvas simulation */}
         <div
-          className="relative max-w-[95%] transition-all duration-200"
+          className={`min-h-[300px] 2xl:min-h-[340px] rounded-2xl border-[1.5px] border-[#231F20] relative overflow-hidden flex flex-col justify-end px-5 pb-5 pt-12 md:px-6 md:pb-6 ${CANVAS_BG[bgMode]}`}
           style={{
-            backgroundColor: style.backgroundColor,
-            borderRadius: `${style.borderRadius}px`,
-            padding: `${style.padding * 1.25}px ${style.padding * 1.8}px`,
-            border: `1px solid ${style.glowColor}44`,
-            boxShadow: `0 12px 40px rgba(0,0,0,0.85), 0 0 ${style.glowBlur}px ${style.glowColor}33`,
-            textAlign: style.alignment,
+            alignItems: justify,
+            fontFamily: `"${style.fontFamily}", 'Prompt', 'Outfit', Kanit, sans-serif`,
           }}
+          aria-live="polite"
         >
-          {style.showRomaji && subtitleToRender.romaji && (
-            <div className="text-xs font-semibold text-white/80 mb-1.5">
-              {subtitleToRender.romaji}
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-black/55 text-[0.6875rem] text-white pointer-events-none font-sans">
+            <Monitor className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>{t.obsCanvasLabel}</span>
+          </div>
+
+          <div
+            className="relative max-w-[95%]"
+            style={{
+              backgroundColor: style.backgroundColor,
+              borderRadius: `${style.borderRadius}px`,
+              padding: `${style.padding * 1.25}px ${style.padding * 1.8}px`,
+              border: `1px solid ${style.glowColor}44`,
+              boxShadow: `0 12px 40px rgba(0,0,0,0.6), 0 0 ${style.glowBlur}px ${style.glowColor}33`,
+              textAlign: style.alignment,
+            }}
+          >
+            {style.showRomaji && subtitleToRender.romaji && (
+              <div className="text-xs font-semibold text-white/80 mb-1.5">{subtitleToRender.romaji}</div>
+            )}
+
+            {style.showSourceText && (
+              <div
+                className="font-extrabold leading-snug mb-3 line-clamp-2"
+                style={{ fontSize: `${style.fontSize}px`, color: style.textColor, textShadow: mainShadow }}
+              >
+                {subtitleToRender.rawText}
+                {!subtitleToRender.isFinal && (
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#67A2D8] ml-2 align-middle talk-pulse" aria-hidden="true" />
+                )}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              {Object.entries(subtitleToRender.translations || {}).map(([lang, text]) => {
+                const color = lang === 'th' ? style.secondaryTextColor : style.thirdTextColor;
+                return (
+                  <div
+                    key={lang}
+                    className="flex items-center gap-2 font-bold leading-snug line-clamp-2"
+                    style={{
+                      fontSize: `${style.translationFontSize}px`,
+                      color,
+                      textShadow: `${outline(Math.max(2, ow - 1), oc)}, 0 0 ${style.glowBlur}px ${color}88`,
+                      justifyContent: justify,
+                    }}
+                  >
+                    <span className="font-mono text-xs font-black opacity-80 px-1.5 py-0.5 rounded bg-black/40 border border-white/20 select-none">
+                      [{lang.toUpperCase()}]
+                    </span>
+                    <span>{text}</span>
+                  </div>
+                );
+              })}
             </div>
-          )}
-
-          {style.showSourceText && (
-            <div
-              className="font-extrabold leading-snug mb-3 line-clamp-2"
-              style={{
-                fontSize: `${style.fontSize}px`,
-                color: style.textColor,
-                textShadow: mainShadow,
-              }}
-            >
-              {subtitleToRender.rawText}
-              {!subtitleToRender.isFinal && (
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 ml-2 animate-ping" />
-              )}
-            </div>
-          )}
-
-          <div className="space-y-2">
-            {Object.entries(subtitleToRender.translations || {}).map(([lang, text]) => {
-              const transShadow = `
-                -${Math.max(2, ow - 1)}px -${Math.max(2, ow - 1)}px 0 ${oc},
-                 ${Math.max(2, ow - 1)}px -${Math.max(2, ow - 1)}px 0 ${oc},
-                -${Math.max(2, ow - 1)}px  ${Math.max(2, ow - 1)}px 0 ${oc},
-                 ${Math.max(2, ow - 1)}px  ${Math.max(2, ow - 1)}px 0 ${oc},
-                 0 0 ${style.glowBlur}px ${lang === 'th' ? style.secondaryTextColor : style.thirdTextColor}88
-              `;
-
-              const langTag = lang.toUpperCase();
-
-              return (
-                <div
-                  key={lang}
-                  className="flex items-center gap-2 font-bold leading-snug line-clamp-2"
-                  style={{
-                    fontSize: `${style.translationFontSize}px`,
-                    color: lang === 'th' ? style.secondaryTextColor : style.thirdTextColor,
-                    textShadow: transShadow,
-                    justifyContent: style.alignment === 'left' ? 'flex-start' : style.alignment === 'right' ? 'flex-end' : 'center',
-                  }}
-                >
-                  <span className="font-mono text-xs font-black opacity-80 px-1.5 py-0.5 rounded bg-black/40 border border-white/20 select-none">
-                    [{langTag}]
-                  </span>
-                  <span>{text}</span>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>
 
-      {/* 3. Manual Input Bar & Quick Phrase Clickers */}
-      <div className="space-y-2 pt-1">
-        <form onSubmit={handleManualSubmit} className="flex gap-2">
-          <input
-            type="text"
-            placeholder={t.inputPlaceholder}
-            value={manualInput}
-            onChange={(e) => setManualInput(e.target.value)}
-            className="flex-1 rounded-lg px-3 py-2 text-xs focus:outline-none font-medium"
-          />
-          <button
-            type="submit"
-            className="btn-white px-4 py-2 flex items-center gap-1.5 text-xs font-bold"
-          >
-            <Send className="w-3.5 h-3.5" />
-            <span>{t.broadcastBtn}</span>
-          </button>
-        </form>
+      {/* Manual input: the panel's one primary action */}
+      <form onSubmit={handleManualSubmit} className="flex gap-2">
+        <label htmlFor="manual-input" className="sr-only">{t.inputPlaceholder}</label>
+        <input
+          id="manual-input"
+          type="text"
+          placeholder={t.inputPlaceholder}
+          value={manualInput}
+          onChange={(e) => setManualInput(e.target.value)}
+          className="field flex-1 !min-h-[40px]"
+        />
+        <button type="submit" className="btn btn-primary !min-h-[40px] px-5">
+          <Send className="w-4 h-4" aria-hidden="true" />
+          <span>{t.broadcastBtn}</span>
+        </button>
+      </form>
 
-        <div className="flex flex-wrap gap-1.5">
-          {quickSamples.map((sample, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => onSendManualText(sample.text)}
-              className="px-2.5 py-1 rounded bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-active)] text-[10px] text-[var(--text-main)] font-semibold transition-all"
-            >
-              {sample.label}
-            </button>
-          ))}
-        </div>
+      <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={t.quickSamplesLabel}>
+        <span className="text-xs text-muted mr-1">{t.quickSamplesLabel}</span>
+        {QUICK_SAMPLES[uiLang].map((sample) => (
+          <button key={sample.label} type="button" onClick={() => onSendManualText(sample.text)} className="btn btn-secondary btn-sm">
+            {sample.label}
+          </button>
+        ))}
       </div>
-    </div>
+    </section>
   );
 };
