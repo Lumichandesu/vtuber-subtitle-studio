@@ -9,7 +9,7 @@ import type {
   GlossaryItem,
   TelemetryStats
 } from '../../src-server/types/schema';
-import { BUILT_IN_PRESETS } from '../../src-server/types/schema';
+import { BUILT_IN_PRESETS } from '../../src-server/types/presets';
 
 const DEFAULT_STYLE: StyleConfig = {
   ...BUILT_IN_PRESETS[0].config,

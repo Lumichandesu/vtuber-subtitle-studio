@@ -48,6 +48,38 @@ function sanitizeText(raw: any, maxLen: number = 2000): string {
   return raw.slice(0, maxLen).trim();
 }
 
+// Broadcast events reach every client with the same payload object, so serialize
+// each (type, payload) once instead of once per connected client.
+const encodeCache = new Map<string, WeakMap<object, string>>();
+function encodeEvent(type: string, payload: any): string {
+  if (payload === null || typeof payload !== 'object') return JSON.stringify({ type, payload });
+  let byPayload = encodeCache.get(type);
+  if (!byPayload) encodeCache.set(type, (byPayload = new WeakMap()));
+  let msg = byPayload.get(payload);
+  if (msg === undefined) {
+    msg = JSON.stringify({ type, payload });
+    byPayload.set(payload, msg);
+  }
+  return msg;
+}
+const SUBTITLES_CLEARED_MSG = JSON.stringify({ type: 'subtitles_cleared' });
+
+// One shared telemetry timer for all clients (was one timer per client, which also
+// made the CPU delta measure only the time since the previous client's tick).
+const telemetryClients = new Set<(msg: string) => void>();
+let telemetryTimer: ReturnType<typeof setInterval> | null = null;
+function ensureTelemetryTimer() {
+  if (telemetryClients.size > 0 && !telemetryTimer) {
+    telemetryTimer = setInterval(() => {
+      const msg = JSON.stringify({ type: 'telemetry', stats: getHardwareTelemetry(1) });
+      for (const send of telemetryClients) send(msg);
+    }, 2500);
+  } else if (telemetryClients.size === 0 && telemetryTimer) {
+    clearInterval(telemetryTimer);
+    telemetryTimer = null;
+  }
+}
+
 export const websocketRoute = new Elysia()
   .ws('/ws', {
     open(ws) {
@@ -60,24 +92,13 @@ export const websocketRoute = new Elysia()
       };
       ws.send(JSON.stringify(initEvent));
 
-      const onStyleChange = (style: any) => {
-        try { ws.send(JSON.stringify({ type: 'style_updated', payload: style })); } catch (e) {}
-      };
-      const onLanguageChange = (lang: any) => {
-        try { ws.send(JSON.stringify({ type: 'language_updated', payload: lang })); } catch (e) {}
-      };
-      const onGlossaryChange = (glossary: any) => {
-        try { ws.send(JSON.stringify({ type: 'glossary_updated', payload: glossary })); } catch (e) {}
-      };
-      const onSubtitleLive = (payload: any) => {
-        try { ws.send(JSON.stringify({ type: 'subtitle_live', payload })); } catch (e) {}
-      };
-      const onSubtitleFinal = (payload: any) => {
-        try { ws.send(JSON.stringify({ type: 'subtitle_final', payload })); } catch (e) {}
-      };
-      const onSubtitlesCleared = () => {
-        try { ws.send(JSON.stringify({ type: 'subtitles_cleared' })); } catch (e) {}
-      };
+      const send = (msg: string) => { try { ws.send(msg); } catch (e) {} };
+      const onStyleChange = (style: any) => send(encodeEvent('style_updated', style));
+      const onLanguageChange = (lang: any) => send(encodeEvent('language_updated', lang));
+      const onGlossaryChange = (glossary: any) => send(encodeEvent('glossary_updated', glossary));
+      const onSubtitleLive = (payload: any) => send(encodeEvent('subtitle_live', payload));
+      const onSubtitleFinal = (payload: any) => send(encodeEvent('subtitle_final', payload));
+      const onSubtitlesCleared = () => send(SUBTITLES_CLEARED_MSG);
 
       stateStore.on('style_change', onStyleChange);
       stateStore.on('language_change', onLanguageChange);
@@ -86,15 +107,12 @@ export const websocketRoute = new Elysia()
       stateStore.on('subtitle_final', onSubtitleFinal);
       stateStore.on('subtitles_cleared', onSubtitlesCleared);
 
-      const telemetryInterval = setInterval(() => {
-        try {
-          const stats = getHardwareTelemetry(1);
-          ws.send(JSON.stringify({ type: 'telemetry', stats }));
-        } catch (e) {}
-      }, 2500);
+      telemetryClients.add(send);
+      ensureTelemetryTimer();
 
       (ws.data as any).cleanup = () => {
-        clearInterval(telemetryInterval);
+        telemetryClients.delete(send);
+        ensureTelemetryTimer();
         stateStore.off('style_change', onStyleChange);
         stateStore.off('language_change', onLanguageChange);
         stateStore.off('glossary_change', onGlossaryChange);
