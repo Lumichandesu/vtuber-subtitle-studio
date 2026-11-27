@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BookOpen, Plus, Trash2, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { BookOpen, Plus, Trash2, X, ArrowRight } from 'lucide-react';
 import type { GlossaryItem } from '../../src-server/types/schema';
 import type { UILang } from '../i18n/translations';
 import { UI_TRANSLATIONS } from '../i18n/translations';
@@ -23,6 +23,15 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({
   const [newPattern, setNewPattern] = useState('');
   const [newReplacement, setNewReplacement] = useState('');
   const [newLang, setNewLang] = useState('th');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -54,90 +63,88 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-5 max-w-xl w-full space-y-4 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2.5 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-black">
-              <BookOpen className="w-5 h-5" />
-            </div>
+    <div
+      className="fixed inset-0 bg-[var(--scrim)] flex items-center justify-center p-4 z-50 animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div role="dialog" aria-modal="true" aria-labelledby="glossary-title" className="modal-card p-6 max-w-2xl w-full space-y-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="step-badge step-pink" aria-hidden="true">
+              <BookOpen className="w-4 h-4" />
+            </span>
             <div>
-              <h3 className="font-black text-base text-[var(--text-main)]">
-                {t.glossaryModalTitle}
-              </h3>
-              <p className="text-xs text-[var(--text-muted)]">
-                {t.glossaryModalDesc}
-              </p>
+              <h2 id="glossary-title" className="panel-title">{t.glossaryModalTitle}</h2>
+              <p className="panel-desc">{t.glossaryModalDesc}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-lg">
-            <X className="w-5 h-5" />
+          <button type="button" onClick={onClose} className="btn btn-ghost btn-icon" aria-label={t.closeBtn}>
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
-        {/* Add Form */}
-        <form onSubmit={handleAddItem} className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-[var(--bg-input)] p-3 rounded-xl border border-[var(--border-subtle)]">
+        <form onSubmit={handleAddItem} className="box grid grid-cols-1 sm:grid-cols-12 gap-2">
           <input
             type="text"
+            aria-label={t.sourcePatternPlaceholder}
             placeholder={t.sourcePatternPlaceholder}
             value={newPattern}
             onChange={(e) => setNewPattern(e.target.value)}
-            className="sm:col-span-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--border-active)] font-medium"
+            className="field sm:col-span-4"
           />
           <select
+            aria-label={t.glossaryLangLabel}
             value={newLang}
             onChange={(e) => setNewLang(e.target.value)}
-            className="sm:col-span-3 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-2 py-1.5 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--border-active)] font-bold"
+            className="field sm:col-span-2"
           >
-            <option value="th">ไทย (TH)</option>
-            <option value="en">English (EN)</option>
-            <option value="ja">日本語 (JP)</option>
+            <option value="th">TH</option>
+            <option value="en">EN</option>
+            <option value="ja">JP</option>
           </select>
           <input
             type="text"
+            aria-label={t.replacementPlaceholder}
             placeholder={t.replacementPlaceholder}
             value={newReplacement}
             onChange={(e) => setNewReplacement(e.target.value)}
-            className="sm:col-span-3 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--border-active)] font-medium"
+            className="field sm:col-span-4"
           />
-          <button
-            type="submit"
-            className="sm:col-span-2 btn-white py-1.5 text-xs flex items-center justify-center gap-1 font-black"
-          >
-            <Plus className="w-3.5 h-3.5" />
+          <button type="submit" className="btn btn-primary sm:col-span-2">
+            <Plus className="w-4 h-4" aria-hidden="true" />
             <span>{t.addTermBtn}</span>
           </button>
         </form>
 
-        {/* Item List */}
-        <div className="max-h-[220px] overflow-y-auto space-y-1.5 pr-1">
+        <ul className="max-h-[260px] overflow-y-auto space-y-1.5 pr-1">
+          {items.length === 0 && (
+            <li className="py-5 text-center text-sm text-muted rounded-xl border border-dashed border-line-strong">{t.glossaryEmpty}</li>
+          )}
           {items.map((item) => (
-            <div
-              key={item.id}
-              className="p-2 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-between gap-3 text-xs"
-            >
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-black text-[var(--text-main)] px-2 py-0.5 rounded bg-[var(--bg-surface)]">
-                  {item.sourcePattern}
-                </span>
-                <span className="text-[var(--text-muted)]">➔</span>
-                <span className="font-bold text-[var(--text-main)] uppercase text-[10px] px-1.5 py-0.5 rounded bg-[var(--btn-secondary-bg)]">
-                  {item.targetLang}
-                </span>
-                <span className="text-[var(--text-main)] font-medium">{item.replacement}</span>
+            <li key={item.id} className="px-3 py-2 rounded-xl bg-sunken border border-line flex items-center justify-between gap-3 text-sm">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="font-medium text-ink truncate">{item.sourcePattern}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-muted shrink-0" aria-hidden="true" />
+                <span className="chip chip-blue uppercase">{item.targetLang === 'ja' ? 'JP' : item.targetLang}</span>
+                <span className="text-ink truncate">{item.replacement}</span>
               </div>
               <button
+                type="button"
                 onClick={() => handleDeleteItem(item.id)}
-                className="p-1 text-[var(--text-muted)] hover:text-rose-400"
+                className="btn btn-ghost btn-sm btn-icon !min-w-[30px] text-danger"
+                aria-label={`${t.removeTerm}: ${item.sourcePattern}`}
+                title={t.removeTerm}
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <div className="flex justify-end pt-2">
-          <button onClick={onClose} className="btn-white px-6 py-2 text-xs font-black">
+        <div className="flex justify-end">
+          <button type="button" onClick={onClose} className="btn btn-secondary px-6">
             {t.doneBtn}
           </button>
         </div>

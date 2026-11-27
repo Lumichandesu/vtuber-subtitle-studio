@@ -57,7 +57,16 @@ export async function getAvailablePort(startPort = DEFAULT_PORT, maxAttempts = 5
     console.warn(`[Anti-Collision] Port ${port} is occupied. Probing port ${port + 1}...`);
   }
   
-  throw new Error(`Unable to find an available port in range ${envPort} - ${envPort + maxAttempts}`);
+  // Windows can reserve whole port ranges (Hyper-V/WSL excluded ranges), so fall back to a port the OS picks.
+  console.warn(`[Anti-Collision] No free port in ${envPort}-${envPort + maxAttempts - 1}; asking the OS for one.`);
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer()
+      .once('error', reject)
+      .listen(0, '127.0.0.1', () => {
+        const { port } = probe.address() as net.AddressInfo;
+        probe.close(() => resolve(port));
+      });
+  });
 }
 
 export const ENV: AppEnvConfig = {

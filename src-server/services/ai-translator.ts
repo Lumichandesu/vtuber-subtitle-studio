@@ -111,14 +111,15 @@ class MultiThreadedTranslatorService {
       await Promise.all(tasks);
     }
 
-    // Strict script validation & auto force translation
-    for (const target of targetLangs) {
+    // Strict script validation & auto force translation (all targets in parallel,
+    // previously awaited one target after another)
+    await Promise.all(targetLangs.map(async (target) => {
       if (target === detectedSource) {
         translations[target] = trimmed;
       } else if (!translations[target] || !this.isValidScriptForLanguage(translations[target], target, detectedSource)) {
         translations[target] = await this.forceTargetTranslation(trimmed, detectedSource, target);
       }
-    }
+    }));
 
     if (!romaji && translations['ja']) {
       romaji = this.toRomaji(translations['ja']);

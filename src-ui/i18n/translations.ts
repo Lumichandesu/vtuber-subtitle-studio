@@ -2,6 +2,7 @@ export type UILang = 'th' | 'ja' | 'en';
 
 export interface TranslationDictionary {
   appTitle: string;
+  appTagline: string;
   badge: string;
   streamSimultaneous: string;
   step1Title: string;
@@ -10,7 +11,9 @@ export interface TranslationDictionary {
   testMicBtn: string;
   stopMicBtn: string;
   selectMic: string;
+  defaultMic: string;
   rescan: string;
+  rescanTitle: string;
   vuLevel: string;
   gateOpen: string;
   gateClosed: string;
@@ -19,7 +22,7 @@ export interface TranslationDictionary {
   spokenLabel: string;
   listeningPrompt: string;
   idlePrompt: string;
-  
+
   sttEngineModeTitle: string;
   studioMicHiFi: string;
   qualityModeTitle: string;
@@ -29,11 +32,22 @@ export interface TranslationDictionary {
 
   matrixTitle: string;
   matrixDesc: string;
+  fastEngineChip: string;
   slangDictBtn: string;
   aiModelLabel: string;
+  apiKeyShow: string;
+  apiKeyHide: string;
+  geminiKeyLabel: string;
+  openaiKeyLabel: string;
+  engineBuiltInName: string;
+  engineBuiltInDesc: string;
+  engineGeminiName: string;
+  engineGeminiDesc: string;
+  engineOpenaiName: string;
+  engineOpenaiDesc: string;
   sourceLangLabel: string;
   targetLangLabel: string;
-  
+
   step2Title: string;
   step2Desc: string;
   presetsLabel: string;
@@ -43,6 +57,11 @@ export interface TranslationDictionary {
   fontCatTh: string;
   fontCatEn: string;
   fontCatLocal: string;
+  fontSourceLocal: string;
+  fontSourceOnline: string;
+  sizeGroupLabel: string;
+  colorGroupLabel: string;
+  displayGroupLabel: string;
   mainFontSize: string;
   transFontSize: string;
   strokeWidth: string;
@@ -52,26 +71,39 @@ export interface TranslationDictionary {
   colorEn: string;
   colorGlow: string;
   autoFade: string;
+  persistent: string;
   showSource: string;
   showRomaji: string;
   maxLinesNote: string;
-  
+
   step3Title: string;
   step3Desc: string;
+  previewBgLabel: string;
+  bgDark: string;
+  bgGreen: string;
+  bgGrid: string;
+  bgStreamer: string;
+  obsCanvasLabel: string;
   clearBtn: string;
   inputPlaceholder: string;
   broadcastBtn: string;
-  
+  quickSamplesLabel: string;
+
   soundboardTitle: string;
   soundboardSub: string;
-  
+
   historyTitle: string;
   linesInMemory: string;
   noHistory: string;
-  
+  exportSrtTitle: string;
+  exportVttTitle: string;
+  copyLine: string;
+
   step4Btn: string;
   deployTitle: string;
   deployDesc: string;
+  overlayUrlLabel: string;
+  openOverlay: string;
   copyUrlBtn: string;
   copiedUrlBtn: string;
   resolutionSetting: string;
@@ -85,7 +117,11 @@ export interface TranslationDictionary {
   copyCss: string;
   copiedCss: string;
   doneBtn: string;
-  
+  closeBtn: string;
+
+  proEditionLabel: string;
+  freeEditionLabel: string;
+  upgradeBtn: string;
   freeEditionBanner: string;
   viewProGumroad: string;
   proModalTitle: string;
@@ -104,10 +140,21 @@ export interface TranslationDictionary {
   oneLangInFree: string;
   glossaryModalTitle: string;
   glossaryModalDesc: string;
+  glossaryEmpty: string;
+  glossaryLangLabel: string;
+  removeTerm: string;
   addTermBtn: string;
   sourcePatternPlaceholder: string;
   replacementPlaceholder: string;
-  
+
+  uiLanguageLabel: string;
+  themeToLight: string;
+  themeToDark: string;
+  latencyTitle: string;
+  cpuTitle: string;
+  ramTitle: string;
+  editionLabel: string;
+  connecting: string;
   ramUsage: string;
   latency: string;
   sidecarActive: string;
@@ -115,341 +162,482 @@ export interface TranslationDictionary {
 
 export const UI_TRANSLATIONS: Record<UILang, TranslationDictionary> = {
   th: {
-    appTitle: 'VTuber AI Subtitle & Live Translator',
-    badge: 'ULTRA LOW-LATENCY',
-    streamSimultaneous: 'สตรีมแปลพร้อมกัน:',
-    step1Title: '[1. ไมค์ & เทสต์เสียง] ทดสอบไมโครโฟน & เสียงพูดสด',
-    step1Desc: 'เลือกไมค์และทดลองพูดเพื่อตรวจผลลัพธ์ว่าระบบรับเสียงติดไหม และแปลสดถูกต้องไหม',
-    talkingBadge: 'กำลังพูด...',
-    testMicBtn: 'ทดสอบไมค์ & พูด',
-    stopMicBtn: 'หยุดทดสอบเสียง',
-    selectMic: 'เลือกอุปกรณ์ไมโครโฟน',
+    appTitle: 'VTuber Subtitle Studio',
+    appTagline: 'ซับไตเติลและแปลภาษาสดบน OBS',
+    badge: 'หน่วงต่ำมาก',
+    streamSimultaneous: 'แปลพร้อมกัน',
+    step1Title: 'ไมค์และการฟังเสียง',
+    step1Desc: 'เลือกไมค์ แล้วลองพูดเพื่อตรวจว่าระบบได้ยินและแปลถูกต้อง',
+    talkingBadge: 'กำลังพูด',
+    testMicBtn: 'เริ่มฟังไมค์',
+    stopMicBtn: 'หยุดไมค์',
+    selectMic: 'ไมโครโฟน',
+    defaultMic: 'ไมค์เริ่มต้นของระบบ',
     rescan: 'สแกนใหม่',
-    vuLevel: 'ระดับเสียงสด & Noise Gate',
-    gateOpen: '⚡ ไมค์เปิดรับเสียง',
-    gateClosed: '💤 ไมค์ตัดเสียงรบกวน',
-    testResultTitle: 'ผลการทดสอบเสียง & การแปลภาษาสด:',
-    engineActive: 'Engine ตอบสนอง:',
-    spokenLabel: 'เสียงที่พูด:',
-    listeningPrompt: '🎙️ ไมค์กำลังฟังเสียงอยู่... ลองพูดประโยคเพื่อทดสอบว่าระบบรับเสียงและแปลงคำแปลขึ้นไหม',
-    idlePrompt: 'กดปุ่ม "ทดสอบไมค์ & พูด" ด้านบน แล้วลองพูดเพื่อทดสอบผลลัพธ์',
-    
-    sttEngineModeTitle: 'โหมดการฟังเสียง & ถอดรหัสคำพูด (Speech Recognition Engine Mode):',
-    studioMicHiFi: '🎙️ Studio Mic 48kHz Hi-Fi (Uncompressed)',
-    qualityModeTitle: '🎯 [Hi-Res Studio Quality] คุณภาพสูงสุด (แนะนำ)',
-    qualityModeDesc: 'แม่นยำสูง ฟังคำชัด ไม่เพี้ยน • Audio DSP 48kHz Mastered • เหมาะสำหรับพูดประโยคยาว & ญี่ปุ่น',
-    speedModeTitle: '⚡ [Ultra-Fast Speed] ตอบสนองไวพิเศษ (< 30ms)',
-    speedModeDesc: 'เน้นความเร็ว ตอบสนองคำต่อคำทันที • Micro-Debounce 20ms Stream',
+    rescanTitle: 'ค้นหาอุปกรณ์เสียงที่เสียบอยู่อีกครั้ง',
+    vuLevel: 'ระดับเสียง',
+    gateOpen: 'รับเสียงอยู่',
+    gateClosed: 'ตัดเสียงรบกวน',
+    testResultTitle: 'ผลการฟังล่าสุด',
+    engineActive: 'เวลาตอบสนอง',
+    spokenLabel: 'ที่พูด',
+    listeningPrompt: 'กำลังฟังอยู่ ลองพูดสักประโยคเพื่อดูคำแปล',
+    idlePrompt: 'กด "เริ่มฟังไมค์" แล้วลองพูดเพื่อทดสอบ',
 
-    matrixTitle: 'ระบบเลือกภาษา & Real-Time AI Translator',
-    matrixDesc: 'แปลสดทุกคำพูดอัตโนมัติด้วยระบบ Neural AI ความเร็วสูง และเปิดใช้งานคำแปลหลายภาษาพร้อมกัน',
-    slangDictBtn: 'พจนานุกรมคำสแลง & ศัพท์เฉพาะ',
-    aiModelLabel: 'โมเดล AI แปลภาษา:',
-    sourceLangLabel: 'ภาษาที่คุณพูด (Source):',
-    targetLangLabel: 'แปลและแสดงผลพร้อมกัน (Simultaneous Targets):',
-    
-    step2Title: '[2. เลือกฟอนต์ & ปรับแต่ง] สตูดิโอฟอนต์ & ดีไซน์ซับ',
-    step2Desc: 'ดึงฟอนต์จาก Windows ในเครื่อง และ Google Fonts ออนไลน์ ปรับขนาด ขอบตัวหนังสือ แสง และสี',
-    presetsLabel: 'พรีเซ็ตสำเร็จรูป (Style Presets):',
-    fontPickerLabel: 'เลือกฟอนต์ (Font Picker):',
+    sttEngineModeTitle: 'โหมดถอดเสียงพูด',
+    studioMicHiFi: 'Studio Mic 48kHz (ไม่บีบอัด)',
+    qualityModeTitle: 'คุณภาพสูงสุด (แนะนำ)',
+    qualityModeDesc: 'ฟังชัด แม่นยำ ปรับเสียง 48kHz เหมาะกับประโยคยาวและภาษาญี่ปุ่น',
+    speedModeTitle: 'เร็วพิเศษ (< 30 ms)',
+    speedModeDesc: 'ขึ้นจอทีละคำทันที เน้นความไว',
+
+    matrixTitle: 'ภาษาและการแปล',
+    matrixDesc: 'เลือกภาษาที่คุณพูด และภาษาที่จะแสดงบน OBS พร้อมกัน',
+    fastEngineChip: '< 40 ms',
+    slangDictBtn: 'พจนานุกรมคำเฉพาะ',
+    aiModelLabel: 'โมเดล AI สำหรับแปล',
+    apiKeyShow: 'ใส่ API Key ของตัวเอง',
+    apiKeyHide: 'ซ่อน API Key',
+    geminiKeyLabel: 'Google Gemini API Key (ไม่บังคับ)',
+    openaiKeyLabel: 'OpenAI API Key (ไม่บังคับ)',
+    engineBuiltInName: 'Neural AI (ฟรี)',
+    engineBuiltInDesc: 'เร็วที่สุด ไม่ต้องใช้คีย์',
+    engineGeminiName: 'Google Gemini 2.5 Flash',
+    engineGeminiDesc: 'แปลเป็นธรรมชาติ เข้าใจภาษาสตรีม',
+    engineOpenaiName: 'OpenAI GPT-4o-mini',
+    engineOpenaiDesc: 'แม่นยำสูงสำหรับประโยคยาว',
+    sourceLangLabel: 'ภาษาที่คุณพูด',
+    targetLangLabel: 'แสดงคำแปลเป็น',
+
+    step2Title: 'หน้าตาซับไตเติล',
+    step2Desc: 'พรีเซ็ต ฟอนต์ ขนาด ขอบตัวอักษร แสง และสี',
+    presetsLabel: 'พรีเซ็ต',
+    fontPickerLabel: 'ฟอนต์',
     fontCatAll: 'ทั้งหมด',
-    fontCatJp: 'ญี่ปุ่น 🇯🇵',
-    fontCatTh: 'ไทย 🇹🇭',
-    fontCatEn: 'อังกฤษ 🇺🇸',
-    fontCatLocal: 'ฟอนต์ในเครื่อง 💻',
-    mainFontSize: 'ขนาดตัวหนังสือหลัก',
-    transFontSize: 'ขนาดตัวหนังสือคำแปล',
-    strokeWidth: 'ความหนาขอบตัวหนังสือ (Stroke)',
-    glowBlur: 'แสงนีออนสะท้อน (Glow Blur)',
-    colorMain: 'สีข้อความหลัก',
-    colorTh: 'สีภาษาไทย (TH)',
-    colorEn: 'สีภาษาอังกฤษ (EN)',
-    colorGlow: 'สีแสงนีออน',
-    autoFade: 'เวลาเลือนหายอัตโนมัติ (วินาที)',
-    showSource: 'แสดงคำพูดต้นฉบับ (Source)',
-    showRomaji: 'แสดงตัวอ่านโรมันจิ (Romaji)',
+    fontCatJp: 'ญี่ปุ่น',
+    fontCatTh: 'ไทย',
+    fontCatEn: 'อังกฤษ',
+    fontCatLocal: 'ในเครื่อง',
+    fontSourceLocal: 'ในเครื่อง',
+    fontSourceOnline: 'ออนไลน์',
+    sizeGroupLabel: 'ขนาดและขอบ',
+    colorGroupLabel: 'สี',
+    displayGroupLabel: 'การแสดงผล',
+    mainFontSize: 'ขนาดข้อความหลัก',
+    transFontSize: 'ขนาดคำแปล',
+    strokeWidth: 'ความหนาขอบ',
+    glowBlur: 'แสงเรือง',
+    colorMain: 'ข้อความหลัก',
+    colorTh: 'ภาษาไทย (TH)',
+    colorEn: 'ภาษาอื่น (EN/JP)',
+    colorGlow: 'สีแสงเรือง',
+    autoFade: 'ซ่อนอัตโนมัติหลัง',
+    persistent: 'ค้างไว้',
+    showSource: 'แสดงประโยคต้นฉบับ',
+    showRomaji: 'แสดงโรมันจิ',
     maxLinesNote: 'ตัดขึ้นบรรทัดใหม่อัตโนมัติเมื่อยาวเกิน 2 บรรทัด',
-    
-    step3Title: '[3. ดูผลลัพธ์สด] จอจำลองผลลัพธ์ OBS Overlay',
-    step3Desc: 'จำลองผลลัพธ์ซับไตเติลบนหน้าจอ OBS แบบ 1:1 Real-Time',
+
+    step3Title: 'ตัวอย่างบนจอ OBS',
+    step3Desc: 'ซับแบบเดียวกับที่ผู้ชมเห็นในสตรีม',
+    previewBgLabel: 'พื้นหลังตัวอย่าง',
+    bgDark: 'มืด',
+    bgGreen: 'กรีนสกรีน',
+    bgGrid: 'ตาราง',
+    bgStreamer: 'จอเกม',
+    obsCanvasLabel: 'OBS 1920 x 1080',
     clearBtn: 'ล้างซับไตเติล',
-    inputPlaceholder: 'พิมพ์ข้อความทดสอบเพื่อดูผลแปลและการแสดงผล...',
-    broadcastBtn: 'ส่งข้อความ',
-    
-    soundboardTitle: 'ปุ่มกดพูดลัด (Stream Soundboard)',
-    soundboardSub: 'กดปุ่มเพื่อยิงคำแปลขึ้น OBS ทันที',
-    
-    historyTitle: 'ประวัติคำพูด & ส่งออกไฟล์ซับ VOD (.SRT / .VTT)',
-    linesInMemory: 'บรรทัดในหน่วยความจำ',
-    noHistory: 'ยังไม่มีประวัติคำพูด ลองพูดผ่านไมค์เพื่อบันทึก',
-    
-    step4Btn: '🚀 DEPLOY TO OBS',
-    deployTitle: '[4. 🚀 DEPLOY TO OBS] ติดตั้งใน OBS Studio',
-    deployDesc: 'คัดลอก URL ด้านล่างไปวางใน OBS Browser Source แล้วใช้งานได้ทันที',
+    inputPlaceholder: 'พิมพ์ข้อความเพื่อส่งขึ้นจอและดูคำแปล',
+    broadcastBtn: 'ส่งขึ้นจอ',
+    quickSamplesLabel: 'ข้อความตัวอย่าง',
+
+    soundboardTitle: 'ปุ่มประโยคลัด',
+    soundboardSub: 'กดครั้งเดียว ส่งคำแปลขึ้น OBS ทันที',
+
+    historyTitle: 'ประวัติคำพูด',
+    linesInMemory: 'บรรทัด',
+    noHistory: 'ยังไม่มีประวัติ ลองพูดผ่านไมค์เพื่อเริ่มบันทึก',
+    exportSrtTitle: 'ดาวน์โหลด .SRT สำหรับ Premiere Pro / DaVinci Resolve',
+    exportVttTitle: 'ดาวน์โหลด .VTT (WebVTT)',
+    copyLine: 'คัดลอกบรรทัดนี้',
+
+    step4Btn: 'เชื่อมต่อ OBS',
+    deployTitle: 'เชื่อมต่อกับ OBS Studio',
+    deployDesc: 'คัดลอก URL ไปวางใน Browser Source ของ OBS แล้วใช้งานได้ทันที',
+    overlayUrlLabel: 'URL สำหรับ Browser Source',
+    openOverlay: 'เปิดโอเวอร์เลย์ในเบราว์เซอร์',
     copyUrlBtn: 'คัดลอก URL',
-    copiedUrlBtn: 'คัดลอกแล้ว!',
-    resolutionSetting: 'การตั้งค่าขนาดความละเอียดใน OBS',
-    threeSteps: '3 ขั้นตอนใส่ใน OBS Studio',
+    copiedUrlBtn: 'คัดลอกแล้ว',
+    resolutionSetting: 'ความละเอียดของซีนใน OBS',
+    threeSteps: '3 ขั้นตอนใน OBS Studio',
     step1Guide: '1. เพิ่ม Source',
-    step1GuideSub: 'กด Sources (+) ➔ เลือก Browser',
+    step1GuideSub: 'กด Sources (+) แล้วเลือก Browser',
     step2Guide: '2. วาง URL',
-    step2GuideSub: 'วาง URL ด้านบน',
-    step3Guide: '3. กำหนดขนาด',
+    step2GuideSub: 'วาง URL ที่คัดลอกไว้',
+    step3Guide: '3. ตั้งขนาด',
     step3GuideSub: 'ใส่ความกว้าง x สูง แล้วกด OK',
     copyCss: 'คัดลอก Custom CSS',
-    copiedCss: 'คัดลอก CSS แล้ว!',
-    doneBtn: 'เสร็จสิ้น',
-    
-    freeEditionBanner: 'กำลังใช้งานเวอร์ชันฟรี (Neural AI ฟรี, ถอดรหัสคำพูดความเร็วสูง)',
-    viewProGumroad: 'ดูฟีเจอร์ PRO & ลิงก์ Gumroad',
+    copiedCss: 'คัดลอก CSS แล้ว',
+    doneBtn: 'เสร็จแล้ว',
+    closeBtn: 'ปิด',
+
+    proEditionLabel: 'PRO',
+    freeEditionLabel: 'FREE',
+    upgradeBtn: 'อัปเกรด',
+    freeEditionBanner: 'คุณกำลังใช้รุ่นฟรี: แปล 1 ภาษา ด้วย Neural AI และโหมดเร็วพิเศษ',
+    viewProGumroad: 'ดูฟีเจอร์ PRO',
     proModalTitle: 'VTuber Subtitle Studio PRO',
-    proModalSubtitle: 'ปลดล็อกทุกฟีเจอร์ระดับมืออาชีพสำหรับสตรีมเมอร์ & VTuber',
-    proFeature1Title: 'Simultaneous Dual Translation:',
-    proFeature1Desc: 'พูด 1 ประโยค แปลและแสดงผลออกทั้ง ญี่ปุ่น [JP] + อังกฤษ [EN] พร้อมกันบน OBS',
-    proFeature2Title: '48kHz Studio Vocal DSP Mastering:',
-    proFeature2Desc: 'ตัดเสียงลมกระแทก (80Hz) + บูสต์ความถี่พยัญชนะ (3.8kHz EQ) + Leveler ไมค์ดูดเสียงชัดเจน',
-    proFeature3Title: 'VOD Subtitle Export (.SRT / .VTT):',
-    proFeature3Desc: 'บันทึกไทม์ไลน์คำพูดตลอดทั้งสตรีม กดส่งออกไฟล์ซับไปตัดต่อคลิปไฮไลต์ลง YouTube ได้ทันที',
-    proFeature4Title: 'VTuber Slang Dictionary & Soundboard:',
-    proFeature4Desc: 'กำหนดคำศัพท์เฉพาะช่อง และปุ่มลัดยิงคำแปลขึ้นจอสดๆ ได้ในคลิกเดียว',
-    switchModeSimulation: '✨ สลับเป็นโหมด PRO จำลอง',
-    switchModeFree: '🔄 สลับไปโหมด Free',
-    buyOnGumroad: 'ซื้อเวอร์ชัน PRO บน Gumroad',
-    oneLangInFree: '1 ภาษาในโหมด Free',
-    glossaryModalTitle: 'พจนานุกรมคำสแลง & ศัพท์เฉพาะช่อง',
-    glossaryModalDesc: 'กำหนดคำศัพท์เฉพาะ สแลง แฟนด้อม หรือชื่อเล่นเพื่อแปลให้ตรงเป๊ะบน OBS',
-    addTermBtn: 'เพิ่มคำศัพท์',
-    sourcePatternPlaceholder: 'คำค้นหา (เช่น 草, てぇてぇ, GG)',
-    replacementPlaceholder: 'คำแปลแทนที่ (เช่น 55555+)',
-    
+    proModalSubtitle: 'ปลดล็อกทุกฟีเจอร์สำหรับสตรีมเมอร์และ VTuber',
+    proFeature1Title: 'แปลสองภาษาพร้อมกัน',
+    proFeature1Desc: 'พูดประโยคเดียว ขึ้นจอทั้งญี่ปุ่น [JP] และอังกฤษ [EN] พร้อมกันบน OBS',
+    proFeature2Title: 'ปรับเสียงไมค์ระดับสตูดิโอ 48kHz',
+    proFeature2Desc: 'ตัดเสียงลม 80Hz เพิ่มความชัดพยัญชนะ 3.8kHz และปรับระดับเสียงให้สม่ำเสมอ',
+    proFeature3Title: 'ส่งออกซับ VOD (.SRT / .VTT)',
+    proFeature3Desc: 'เก็บไทม์ไลน์คำพูดทั้งสตรีม ส่งออกไปตัดคลิปไฮไลต์ลง YouTube ได้ทันที',
+    proFeature4Title: 'พจนานุกรมคำเฉพาะและปุ่มประโยคลัด',
+    proFeature4Desc: 'กำหนดคำเฉพาะของช่อง และยิงประโยคขึ้นจอได้ในคลิกเดียว',
+    switchModeSimulation: 'สลับเป็นโหมด PRO',
+    switchModeFree: 'สลับเป็นโหมด Free',
+    buyOnGumroad: 'ซื้อรุ่น PRO บน Gumroad',
+    oneLangInFree: 'รุ่นฟรีเลือกได้ 1 ภาษา',
+    glossaryModalTitle: 'พจนานุกรมคำเฉพาะของช่อง',
+    glossaryModalDesc: 'กำหนดคำสแลง ชื่อแฟนด้อม หรือชื่อเล่น ให้แปลตรงตามที่ต้องการบน OBS',
+    glossaryEmpty: 'ยังไม่มีคำศัพท์ เพิ่มคำแรกด้านบนได้เลย',
+    glossaryLangLabel: 'ภาษาปลายทาง',
+    removeTerm: 'ลบคำนี้',
+    addTermBtn: 'เพิ่มคำ',
+    sourcePatternPlaceholder: 'คำที่พูด เช่น 草, てぇてぇ, GG',
+    replacementPlaceholder: 'แปลเป็น เช่น 55555+',
+
+    uiLanguageLabel: 'ภาษาของหน้าจอ',
+    themeToLight: 'สลับเป็นธีมสว่าง',
+    themeToDark: 'สลับเป็นธีมมืด',
+    latencyTitle: 'เวลาหน่วงตั้งแต่พูดจนขึ้นจอ',
+    cpuTitle: 'การใช้ CPU',
+    ramTitle: 'หน่วยความจำของเซิร์ฟเวอร์',
+    editionLabel: 'รุ่น',
+    connecting: 'กำลังเชื่อมต่อ...',
     ramUsage: 'RAM',
-    latency: 'Latency',
-    sidecarActive: 'Bun Sidecar ทำงานปกติ',
+    latency: 'หน่วง',
+    sidecarActive: 'เซิร์ฟเวอร์ทำงานปกติ',
   },
-  
+
   ja: {
-    appTitle: 'VTuber AI 字幕 & リアルタイム翻訳 Studio',
-    badge: '超低遅延 ENGINE',
-    streamSimultaneous: '同時配信翻訳:',
-    step1Title: '[1. マイク & 音声テスト] マイク調整 & リアルタイム音声テスト',
-    step1Desc: 'マイクを選択して発声テストを行い、認識と翻訳が即座に動作することを確認します',
-    talkingBadge: '発声中...',
-    testMicBtn: 'マイクテスト開始',
-    stopMicBtn: 'テスト停止',
-    selectMic: '入力マイクを選択',
+    appTitle: 'VTuber Subtitle Studio',
+    appTagline: 'OBS 向けリアルタイム字幕・翻訳',
+    badge: '超低遅延',
+    streamSimultaneous: '同時翻訳',
+    step1Title: 'マイクと音声認識',
+    step1Desc: 'マイクを選んで話しかけ、認識と翻訳が正しく動くか確認します',
+    talkingBadge: '発話中',
+    testMicBtn: 'マイクを開始',
+    stopMicBtn: 'マイクを停止',
+    selectMic: 'マイク',
+    defaultMic: 'システムの既定のマイク',
     rescan: '再スキャン',
-    vuLevel: 'リアルタイム音量 & ノイズゲート',
-    gateOpen: '⚡ 音声認識中',
-    gateClosed: '💤 待機中',
-    testResultTitle: 'リアルタイム音声認識 & 翻訳結果:',
-    engineActive: 'Engine 応答速度:',
-    spokenLabel: '発話内容:',
-    listeningPrompt: '🎙️ 音声を聴き取っています... 話しかけてリアルタイム翻訳をテストしてください',
-    idlePrompt: '上の「マイクテスト開始」を押して話しかけてください',
-    
-    sttEngineModeTitle: '音声認識 & 発声デコードモード (Speech Recognition Engine Mode):',
-    studioMicHiFi: '🎙️ Studio Mic 48kHz Hi-Fi (非圧縮スタジオ音質)',
-    qualityModeTitle: '🎯 [Hi-Res Studio Quality] 最高音質・高精度 (推奨)',
-    qualityModeDesc: '高精度認識・誤認識防止 • Audio DSP 48kHz Mastered • 長文発話や日本語に最適',
-    speedModeTitle: '⚡ [Ultra-Fast Speed] 超高速リアルタイム応答 (< 30ms)',
-    speedModeDesc: '速度最優先・即座に単語ごと出力 • Micro-Debounce 20ms Stream',
+    rescanTitle: '接続中のオーディオデバイスを再検索',
+    vuLevel: '入力レベル',
+    gateOpen: '認識中',
+    gateClosed: '待機中',
+    testResultTitle: '最新の認識結果',
+    engineActive: '応答時間',
+    spokenLabel: '発話',
+    listeningPrompt: '聞き取り中です。何か話すと翻訳が表示されます',
+    idlePrompt: '「マイクを開始」を押して話しかけてください',
 
-    matrixTitle: '言語選択 & リアルタイム AI 翻訳エンジン',
-    matrixDesc: 'ニューラル AI による完全自動リアルタイム翻訳。複数言語への同時出力に対応',
-    slangDictBtn: 'VTuber スラング & 用語辞書',
-    aiModelLabel: 'AI 翻訳モデル:',
-    sourceLangLabel: 'あなたが話す言語 (Source):',
-    targetLangLabel: '同時翻訳・表示言語 (Simultaneous Targets):',
-    
-    step2Title: '[2. フォント & スタイル設定] 字幕フォント & デザイン Studio',
-    step2Desc: 'Windows のローカルフォントや Google Fonts を読み込み、縁取りや発光をカスタマイズ',
-    presetsLabel: 'プリセット (Style Presets):',
-    fontPickerLabel: 'フォント選択 (Font Picker):',
+    sttEngineModeTitle: '音声認識モード',
+    studioMicHiFi: 'Studio Mic 48kHz (非圧縮)',
+    qualityModeTitle: '高品質 (おすすめ)',
+    qualityModeDesc: '高精度で聞き取りが正確。48kHz 音声処理。長文や日本語に最適',
+    speedModeTitle: '超高速 (< 30 ms)',
+    speedModeDesc: '単語ごとに即表示。速度を優先',
+
+    matrixTitle: '言語と翻訳',
+    matrixDesc: '話す言語と、OBS に同時表示する言語を選びます',
+    fastEngineChip: '< 40 ms',
+    slangDictBtn: '用語辞書',
+    aiModelLabel: '翻訳 AI モデル',
+    apiKeyShow: '自分の API キーを使う',
+    apiKeyHide: 'API キーを隠す',
+    geminiKeyLabel: 'Google Gemini API キー (任意)',
+    openaiKeyLabel: 'OpenAI API キー (任意)',
+    engineBuiltInName: 'Neural AI (無料)',
+    engineBuiltInDesc: '最速。キー不要',
+    engineGeminiName: 'Google Gemini 2.5 Flash',
+    engineGeminiDesc: '自然で配信向けの翻訳',
+    engineOpenaiName: 'OpenAI GPT-4o-mini',
+    engineOpenaiDesc: '長文でも高精度',
+    sourceLangLabel: '話す言語',
+    targetLangLabel: '翻訳の表示言語',
+
+    step2Title: '字幕デザイン',
+    step2Desc: 'プリセット、フォント、サイズ、縁取り、発光、色',
+    presetsLabel: 'プリセット',
+    fontPickerLabel: 'フォント',
     fontCatAll: 'すべて',
-    fontCatJp: '日本語 🇯🇵',
-    fontCatTh: 'タイ語 🇹🇭',
-    fontCatEn: '英語 🇺🇸',
-    fontCatLocal: 'ローカルフォント 💻',
-    mainFontSize: 'メインフォントサイズ',
-    transFontSize: '翻訳フォントサイズ',
-    strokeWidth: '文字の縁取り幅 (Stroke)',
-    glowBlur: 'ネオン発光 (Glow Blur)',
-    colorMain: 'メインテキスト色',
-    colorTh: 'タイ語テキスト色',
-    colorEn: '英語テキスト色',
-    colorGlow: 'ネオン発光色',
-    autoFade: '自動フェードアウト時間 (秒)',
-    showSource: '発話原文を表示 (Source)',
-    showRomaji: 'ローマ字読みを表示 (Romaji)',
-    maxLinesNote: '2行を超えると自動で改行・スクロールします',
-    
-    step3Title: '[3. プレビュー] OBS オーバーレイ リアルタイム確認',
-    step3Desc: 'OBS 配信画面に表示される字幕を 1:1 でリアルタイム確認',
-    clearBtn: '字幕クリア',
-    inputPlaceholder: 'テストメッセージを入力して即座に翻訳・送信...',
-    broadcastBtn: '送信',
-    
-    soundboardTitle: '定型句サウンドボード (Stream Soundboard)',
-    soundboardSub: 'ワンクリックで OBS に即座に字幕を送信',
-    
-    historyTitle: '発言タイムライン & VOD 字幕エクスポート (.SRT / .VTT)',
-    linesInMemory: '行のログを保持中',
-    noHistory: '履歴がありません。マイクで発声してログを記録してください',
-    
-    step4Btn: '🚀 OBS にデプロイ',
-    deployTitle: '[4. 🚀 DEPLOY TO OBS] OBS Studio への接続設定',
-    deployDesc: '下の URL をコピーして OBS の「ブラウザ」ソースに貼り付けるだけです',
-    copyUrlBtn: 'URL をコピー',
-    copiedUrlBtn: 'コピー完了!',
-    resolutionSetting: 'OBS 解像度設定',
-    threeSteps: 'OBS Studio 設定の 3 ステップ',
-    step1Guide: '1. ソース追加',
-    step1GuideSub: 'ソース (+) ➔ 「ブラウザ」を選択',
-    step2Guide: '2. URL 貼り付け',
-    step2GuideSub: '上記の URL を入力',
-    step3Guide: '3. サイズ設定',
-    step3GuideSub: '幅と高さを指定して OK をクリック',
-    copyCss: 'カスタム CSS をコピー',
-    copiedCss: 'CSS コピー完了!',
-    doneBtn: '完了',
-    
-    freeEditionBanner: '無料コミュニティ版を使用中 (高速 Neural AI・リアルタイム認識)',
-    viewProGumroad: 'PRO 版の機能 & Gumroad リンクを見る',
-    proModalTitle: 'VTuber Subtitle Studio PRO',
-    proModalSubtitle: 'VTuber・ストリーマー向けプロ仕様の全機能をアンロック',
-    proFeature1Title: '同時2言語リアルタイム翻訳 (Simultaneous Output):',
-    proFeature1Desc: '1回の発声で [日本語] と [英語] (またはタイ語) を OBS 上に同時表示',
-    proFeature2Title: '48kHz スタジオ品質 音声 DSP マスタリング:',
-    proFeature2Desc: '80Hz 低域ノイズカット + 3.8kHz 子音明瞭化 EQ + コンプレッサーでクリアな音声認識',
-    proFeature3Title: 'VOD 字幕エクスポート (.SRT / .VTT):',
-    proFeature3Desc: '配信中の全発言タイムラインをワンクリックで SRT 出力。YouTube 切り抜き動画制作に直結',
-    proFeature4Title: 'VTuber 専用用語辞書 & 定型句サウンドボード:',
-    proFeature4Desc: 'チャンネル固有の用語登録や、ワンクリックで定型句字幕を即時送出',
-    switchModeSimulation: '✨ PRO モードに切り替え',
-    switchModeFree: '🔄 FREE モードに切り替え',
-    buyOnGumroad: 'Gumroad で PRO 版を購入する',
-    oneLangInFree: 'Free 版は 1 言語',
-    glossaryModalTitle: 'VTuber スラング & 固有用語辞書',
-    glossaryModalDesc: 'VTuber 固有の挨拶、スラング、固有名詞を正しい翻訳テキストに自動置換',
-    addTermBtn: '用語を追加',
-    sourcePatternPlaceholder: '検索単語 (例: 草, てぇてぇ, GG)',
-    replacementPlaceholder: '置換後のテキスト (例: ｗｗｗ, てえてえ)',
-    
-    ramUsage: 'RAM',
-    latency: 'Latency',
-    sidecarActive: 'Bun Sidecar 稼働中',
-  },
-  
-  en: {
-    appTitle: 'VTuber AI Subtitle & Live Translator Studio',
-    badge: 'ULTRA LOW-LATENCY',
-    streamSimultaneous: 'Simultaneous Stream:',
-    step1Title: '[1. Mic & Voice Test] Microphone Calibration & Live Speech Test',
-    step1Desc: 'Select your mic and test your voice to verify instant transcription & accurate translation',
-    talkingBadge: 'TALKING...',
-    testMicBtn: 'Test Mic & Speech',
-    stopMicBtn: 'Stop Voice Test',
-    selectMic: 'Select Input Microphone',
-    rescan: 'Rescan',
-    vuLevel: 'Live VU Level & Noise Gate',
-    gateOpen: '⚡ Voice Gate Open',
-    gateClosed: '💤 Gate Closed',
-    testResultTitle: 'Live Speech Recognition & Translation Test Result:',
-    engineActive: 'Engine Response:',
-    spokenLabel: 'You Spoke:',
-    listeningPrompt: '🎙️ Listening to microphone... Speak any sentence to test live recognition and translation',
-    idlePrompt: 'Click "Test Mic & Speech" above and start talking to verify live output',
-    
-    sttEngineModeTitle: 'Speech Recognition Engine Mode:',
-    studioMicHiFi: '🎙️ Studio Mic 48kHz Hi-Fi (Uncompressed)',
-    qualityModeTitle: '🎯 [Hi-Res Studio Quality] Maximum Accuracy (Recommended)',
-    qualityModeDesc: 'High precision, crystal-clear voice decoding • Audio DSP 48kHz Mastered • Best for long sentences & Japanese',
-    speedModeTitle: '⚡ [Ultra-Fast Speed] Ultra-Low Latency (< 30ms)',
-    speedModeDesc: 'Prioritizes speed, instant word-by-word streaming • Micro-Debounce 20ms Stream',
+    fontCatJp: '日本語',
+    fontCatTh: 'タイ語',
+    fontCatEn: '英語',
+    fontCatLocal: 'ローカル',
+    fontSourceLocal: 'ローカル',
+    fontSourceOnline: 'オンライン',
+    sizeGroupLabel: 'サイズと縁取り',
+    colorGroupLabel: '色',
+    displayGroupLabel: '表示',
+    mainFontSize: 'メイン文字サイズ',
+    transFontSize: '翻訳文字サイズ',
+    strokeWidth: '縁取りの太さ',
+    glowBlur: '発光',
+    colorMain: 'メインテキスト',
+    colorTh: 'タイ語 (TH)',
+    colorEn: 'その他の言語 (EN/JP)',
+    colorGlow: '発光色',
+    autoFade: '自動で消えるまで',
+    persistent: '表示し続ける',
+    showSource: '原文を表示',
+    showRomaji: 'ローマ字を表示',
+    maxLinesNote: '2 行を超えると自動で改行します',
 
-    matrixTitle: 'Language Matrix & Real-Time AI Translation Engine',
-    matrixDesc: 'Ultra-fast neural translation with simultaneous multi-target broadcasting',
-    slangDictBtn: 'Stream Slang & Term Dictionary',
-    aiModelLabel: 'AI Translation Model:',
-    sourceLangLabel: 'Source Spoken Language:',
-    targetLangLabel: 'Simultaneous Output Targets:',
-    
-    step2Title: '[2. Font & Style Studio] Subtitle Fonts & Styling Studio',
-    step2Desc: 'Load local Windows fonts or Google Fonts with customizable outlines, glow, and colors',
-    presetsLabel: 'Style Presets:',
-    fontPickerLabel: 'Font Picker:',
-    fontCatAll: 'All',
-    fontCatJp: 'Japanese 🇯🇵',
-    fontCatTh: 'Thai 🇹🇭',
-    fontCatEn: 'English 🇺🇸',
-    fontCatLocal: 'Windows Local 💻',
-    mainFontSize: 'Main Font Size',
-    transFontSize: 'Translation Font Size',
-    strokeWidth: 'Text Outline Width (Stroke)',
-    glowBlur: 'Neon Glow Blur',
-    colorMain: 'Main Text Color',
-    colorTh: 'Thai (TH) Color',
-    colorEn: 'English (EN) Color',
-    colorGlow: 'Neon Glow Color',
-    autoFade: 'Auto-Fade Timeout (sec)',
-    showSource: 'Show Source Spoken Text',
-    showRomaji: 'Show Romaji Reading',
-    maxLinesNote: 'Auto-rolls and wraps after 2 lines for clean stream framing',
-    
-    step3Title: '[3. Live Result] OBS Overlay Live Simulator',
-    step3Desc: '1:1 Real-time simulation of the exact subtitle rendering in OBS Studio',
-    clearBtn: 'Clear Subtitles',
-    inputPlaceholder: 'Type any test message to broadcast live...',
-    broadcastBtn: 'Broadcast',
-    
-    soundboardTitle: 'Stream Phrase Soundboard',
-    soundboardSub: '1-Click instant broadcast of common stream phrases',
-    
-    historyTitle: 'Transcript Timeline & VOD Subtitle Export (.SRT / .VTT)',
-    linesInMemory: 'lines in memory',
-    noHistory: 'No subtitle history yet. Speak into your microphone to record lines',
-    
-    step4Btn: '🚀 DEPLOY TO OBS',
-    deployTitle: '[4. 🚀 DEPLOY TO OBS] Deploy to OBS Studio',
-    deployDesc: 'Copy the URL below into an OBS Browser Source for instant zero-latency subtitles',
-    copyUrlBtn: 'Copy URL',
-    copiedUrlBtn: 'Copied!',
-    resolutionSetting: 'OBS Resolution Preset',
-    threeSteps: '3 Steps to add in OBS Studio',
-    step1Guide: '1. Add Source',
-    step1GuideSub: 'Click Sources (+) ➔ Select Browser',
-    step2Guide: '2. Paste URL',
-    step2GuideSub: 'Paste the URL above',
-    step3Guide: '3. Set Dimensions',
-    step3GuideSub: 'Set Width x Height and click OK',
-    copyCss: 'Copy Custom CSS',
-    copiedCss: 'Copied CSS!',
-    doneBtn: 'Done',
-    
-    freeEditionBanner: 'Using Free Community Edition (Neural AI, High-Speed Speech)',
-    viewProGumroad: 'View PRO Features & Gumroad Link',
+    step3Title: 'OBS プレビュー',
+    step3Desc: '視聴者が見るのと同じ字幕を確認できます',
+    previewBgLabel: 'プレビュー背景',
+    bgDark: 'ダーク',
+    bgGreen: 'グリーンバック',
+    bgGrid: 'グリッド',
+    bgStreamer: 'ゲーム画面',
+    obsCanvasLabel: 'OBS 1920 x 1080',
+    clearBtn: '字幕をクリア',
+    inputPlaceholder: 'テキストを入力して画面に送信',
+    broadcastBtn: '送信',
+    quickSamplesLabel: 'サンプル文',
+
+    soundboardTitle: '定型句ボタン',
+    soundboardSub: 'ワンクリックで OBS に字幕を送信',
+
+    historyTitle: '発言履歴',
+    linesInMemory: '行',
+    noHistory: '履歴はまだありません。マイクで話すと記録されます',
+    exportSrtTitle: 'Premiere Pro / DaVinci Resolve 用 .SRT をダウンロード',
+    exportVttTitle: '.VTT (WebVTT) をダウンロード',
+    copyLine: 'この行をコピー',
+
+    step4Btn: 'OBS に接続',
+    deployTitle: 'OBS Studio に接続',
+    deployDesc: 'URL をコピーして OBS のブラウザソースに貼り付けるだけです',
+    overlayUrlLabel: 'ブラウザソース用 URL',
+    openOverlay: 'ブラウザでオーバーレイを開く',
+    copyUrlBtn: 'URL をコピー',
+    copiedUrlBtn: 'コピーしました',
+    resolutionSetting: 'OBS のシーン解像度',
+    threeSteps: 'OBS Studio での 3 ステップ',
+    step1Guide: '1. ソース追加',
+    step1GuideSub: 'ソース (+) から「ブラウザ」を選択',
+    step2Guide: '2. URL を貼り付け',
+    step2GuideSub: 'コピーした URL を入力',
+    step3Guide: '3. サイズ設定',
+    step3GuideSub: '幅と高さを入れて OK',
+    copyCss: 'カスタム CSS をコピー',
+    copiedCss: 'CSS をコピーしました',
+    doneBtn: '完了',
+    closeBtn: '閉じる',
+
+    proEditionLabel: 'PRO',
+    freeEditionLabel: 'FREE',
+    upgradeBtn: 'アップグレード',
+    freeEditionBanner: '無料版を使用中: Neural AI で 1 言語翻訳、超高速モード',
+    viewProGumroad: 'PRO の機能を見る',
     proModalTitle: 'VTuber Subtitle Studio PRO',
-    proModalSubtitle: 'Unlock all professional features for VTubers and Streamers',
-    proFeature1Title: 'Simultaneous Dual Translation:',
-    proFeature1Desc: 'Speak 1 sentence, output both Japanese [JP] and English [EN] simultaneously on OBS',
-    proFeature2Title: '48kHz Studio Vocal DSP Mastering:',
-    proFeature2Desc: '80Hz low rumble cut + 3.8kHz consonant presence boost + dynamic voice leveler',
-    proFeature3Title: 'VOD Subtitle Export (.SRT / .VTT):',
-    proFeature3Desc: 'Record stream timeline and export SRT in 1 click for YouTube highlight editing',
-    proFeature4Title: 'VTuber Slang Dictionary & Soundboard:',
-    proFeature4Desc: 'Custom channel terminology and 1-click broadcast hotkeys',
-    switchModeSimulation: '✨ Switch to PRO Mode',
-    switchModeFree: '🔄 Switch to Free Mode',
+    proModalSubtitle: 'VTuber・配信者向けの全機能をアンロック',
+    proFeature1Title: '2 言語同時翻訳',
+    proFeature1Desc: '1 回話すだけで [日本語] と [英語] (またはタイ語) を OBS に同時表示',
+    proFeature2Title: '48kHz スタジオ品質の音声処理',
+    proFeature2Desc: '80Hz 低域カット、3.8kHz 子音強調 EQ、音量の自動調整で認識がクリアに',
+    proFeature3Title: 'VOD 字幕エクスポート (.SRT / .VTT)',
+    proFeature3Desc: '配信中の発言をすべて記録し、ワンクリックで切り抜き編集用に書き出し',
+    proFeature4Title: '用語辞書と定型句ボタン',
+    proFeature4Desc: 'チャンネル固有の用語を登録し、定型句をワンクリックで表示',
+    switchModeSimulation: 'PRO モードに切り替え',
+    switchModeFree: 'FREE モードに切り替え',
+    buyOnGumroad: 'Gumroad で PRO 版を購入',
+    oneLangInFree: '無料版は 1 言語まで',
+    glossaryModalTitle: 'チャンネル用語辞書',
+    glossaryModalDesc: 'スラングやファンネーム、愛称を思い通りの訳語に自動で置き換えます',
+    glossaryEmpty: '用語はまだありません。上から最初の用語を追加してください',
+    glossaryLangLabel: '翻訳先の言語',
+    removeTerm: 'この用語を削除',
+    addTermBtn: '追加',
+    sourcePatternPlaceholder: '元の語 (例: 草, てぇてぇ, GG)',
+    replacementPlaceholder: '置き換え後 (例: ｗｗｗ)',
+
+    uiLanguageLabel: '表示言語',
+    themeToLight: 'ライトテーマに切り替え',
+    themeToDark: 'ダークテーマに切り替え',
+    latencyTitle: '発話から表示までの遅延',
+    cpuTitle: 'CPU 使用率',
+    ramTitle: 'サーバーのメモリ使用量',
+    editionLabel: 'エディション',
+    connecting: '接続中...',
+    ramUsage: 'RAM',
+    latency: '遅延',
+    sidecarActive: 'サーバー稼働中',
+  },
+
+  en: {
+    appTitle: 'VTuber Subtitle Studio',
+    appTagline: 'Live subtitles and translation for OBS',
+    badge: 'Ultra low latency',
+    streamSimultaneous: 'Live translation',
+    step1Title: 'Mic and listening',
+    step1Desc: 'Pick your mic and say something to check recognition and translation',
+    talkingBadge: 'Talking',
+    testMicBtn: 'Start mic',
+    stopMicBtn: 'Stop mic',
+    selectMic: 'Microphone',
+    defaultMic: 'Default system microphone',
+    rescan: 'Rescan',
+    rescanTitle: 'Look for connected audio devices again',
+    vuLevel: 'Input level',
+    gateOpen: 'Listening',
+    gateClosed: 'Gate closed',
+    testResultTitle: 'Latest result',
+    engineActive: 'Response time',
+    spokenLabel: 'You said',
+    listeningPrompt: 'Listening. Say a sentence to see the translation',
+    idlePrompt: 'Press "Start mic" and say something to test',
+
+    sttEngineModeTitle: 'Speech recognition mode',
+    studioMicHiFi: 'Studio Mic 48kHz (uncompressed)',
+    qualityModeTitle: 'Best quality (recommended)',
+    qualityModeDesc: 'Most accurate, 48kHz voice processing. Best for long sentences and Japanese',
+    speedModeTitle: 'Fastest (< 30 ms)',
+    speedModeDesc: 'Word-by-word output, speed first',
+
+    matrixTitle: 'Languages and translation',
+    matrixDesc: 'Choose the language you speak and the languages shown on OBS',
+    fastEngineChip: '< 40 ms',
+    slangDictBtn: 'Term dictionary',
+    aiModelLabel: 'Translation model',
+    apiKeyShow: 'Use my own API key',
+    apiKeyHide: 'Hide API keys',
+    geminiKeyLabel: 'Google Gemini API key (optional)',
+    openaiKeyLabel: 'OpenAI API key (optional)',
+    engineBuiltInName: 'Neural AI (free)',
+    engineBuiltInDesc: 'Fastest, no key needed',
+    engineGeminiName: 'Google Gemini 2.5 Flash',
+    engineGeminiDesc: 'Natural, stream-aware translation',
+    engineOpenaiName: 'OpenAI GPT-4o-mini',
+    engineOpenaiDesc: 'High accuracy on long sentences',
+    sourceLangLabel: 'You speak',
+    targetLangLabel: 'Show translations in',
+
+    step2Title: 'Subtitle look',
+    step2Desc: 'Presets, font, size, outline, glow and colours',
+    presetsLabel: 'Presets',
+    fontPickerLabel: 'Font',
+    fontCatAll: 'All',
+    fontCatJp: 'Japanese',
+    fontCatTh: 'Thai',
+    fontCatEn: 'English',
+    fontCatLocal: 'Installed',
+    fontSourceLocal: 'Installed',
+    fontSourceOnline: 'Online',
+    sizeGroupLabel: 'Size and outline',
+    colorGroupLabel: 'Colours',
+    displayGroupLabel: 'Display',
+    mainFontSize: 'Main text size',
+    transFontSize: 'Translation size',
+    strokeWidth: 'Outline width',
+    glowBlur: 'Glow',
+    colorMain: 'Main text',
+    colorTh: 'Thai (TH)',
+    colorEn: 'Other languages (EN/JP)',
+    colorGlow: 'Glow colour',
+    autoFade: 'Hide after',
+    persistent: 'Keep shown',
+    showSource: 'Show original sentence',
+    showRomaji: 'Show romaji',
+    maxLinesNote: 'Wraps automatically after 2 lines',
+
+    step3Title: 'OBS preview',
+    step3Desc: 'The same subtitle your viewers see on stream',
+    previewBgLabel: 'Preview background',
+    bgDark: 'Dark',
+    bgGreen: 'Green screen',
+    bgGrid: 'Grid',
+    bgStreamer: 'Game',
+    obsCanvasLabel: 'OBS 1920 x 1080',
+    clearBtn: 'Clear subtitles',
+    inputPlaceholder: 'Type a message to send it on screen',
+    broadcastBtn: 'Send',
+    quickSamplesLabel: 'Sample lines',
+
+    soundboardTitle: 'Quick phrases',
+    soundboardSub: 'One click sends the line to OBS',
+
+    historyTitle: 'Transcript history',
+    linesInMemory: 'saved',
+    noHistory: 'No history yet. Speak into your mic to start recording lines',
+    exportSrtTitle: 'Download .SRT for Premiere Pro / DaVinci Resolve',
+    exportVttTitle: 'Download .VTT (WebVTT)',
+    copyLine: 'Copy this line',
+
+    step4Btn: 'Connect to OBS',
+    deployTitle: 'Connect to OBS Studio',
+    deployDesc: 'Copy the URL into an OBS Browser Source and you are live',
+    overlayUrlLabel: 'Browser Source URL',
+    openOverlay: 'Open the overlay in your browser',
+    copyUrlBtn: 'Copy URL',
+    copiedUrlBtn: 'Copied',
+    resolutionSetting: 'OBS scene resolution',
+    threeSteps: '3 steps in OBS Studio',
+    step1Guide: '1. Add a source',
+    step1GuideSub: 'Click Sources (+) and choose Browser',
+    step2Guide: '2. Paste the URL',
+    step2GuideSub: 'Paste the URL you copied',
+    step3Guide: '3. Set the size',
+    step3GuideSub: 'Enter width x height and click OK',
+    copyCss: 'Copy custom CSS',
+    copiedCss: 'CSS copied',
+    doneBtn: 'Done',
+    closeBtn: 'Close',
+
+    proEditionLabel: 'PRO',
+    freeEditionLabel: 'FREE',
+    upgradeBtn: 'Upgrade',
+    freeEditionBanner: 'You are on the free edition: 1 target language with Neural AI and fast mode',
+    viewProGumroad: 'See PRO features',
+    proModalTitle: 'VTuber Subtitle Studio PRO',
+    proModalSubtitle: 'Unlock every feature for VTubers and streamers',
+    proFeature1Title: 'Two languages at once',
+    proFeature1Desc: 'Say one sentence and show both Japanese [JP] and English [EN] on OBS',
+    proFeature2Title: '48kHz studio voice processing',
+    proFeature2Desc: '80Hz rumble cut, 3.8kHz consonant boost and a voice leveller for clearer recognition',
+    proFeature3Title: 'VOD subtitle export (.SRT / .VTT)',
+    proFeature3Desc: 'Record the whole stream timeline and export it for highlight edits in one click',
+    proFeature4Title: 'Term dictionary and quick phrases',
+    proFeature4Desc: 'Add your channel terms and send ready-made lines in one click',
+    switchModeSimulation: 'Switch to PRO mode',
+    switchModeFree: 'Switch to Free mode',
     buyOnGumroad: 'Get PRO on Gumroad',
-    oneLangInFree: '1 target in Free',
-    glossaryModalTitle: 'Stream Slang & Custom Term Dictionary',
-    glossaryModalDesc: 'Auto-replace streamer terms, slang, and character names with exact translations on OBS',
-    addTermBtn: 'Add Term',
-    sourcePatternPlaceholder: 'Search Term (e.g., 草, てぇてぇ, GG)',
-    replacementPlaceholder: 'Replacement Text (e.g., LOL, kawaii)',
-    
+    oneLangInFree: 'Free edition: 1 language',
+    glossaryModalTitle: 'Channel term dictionary',
+    glossaryModalDesc: 'Replace slang, fandom names and nicknames with the exact translation you want on OBS',
+    glossaryEmpty: 'No terms yet. Add your first one above',
+    glossaryLangLabel: 'Target language',
+    removeTerm: 'Remove this term',
+    addTermBtn: 'Add',
+    sourcePatternPlaceholder: 'Spoken term, e.g. 草, てぇてぇ, GG',
+    replacementPlaceholder: 'Show as, e.g. LOL',
+
+    uiLanguageLabel: 'Interface language',
+    themeToLight: 'Switch to light theme',
+    themeToDark: 'Switch to dark theme',
+    latencyTitle: 'Delay from speech to screen',
+    cpuTitle: 'CPU usage',
+    ramTitle: 'Server memory',
+    editionLabel: 'Edition',
+    connecting: 'Connecting...',
     ramUsage: 'RAM',
     latency: 'Latency',
-    sidecarActive: 'Bun Sidecar Active',
-  }
+    sidecarActive: 'Server running',
+  },
 };
